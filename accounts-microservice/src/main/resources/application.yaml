@@ -8,3 +8,10 @@ spring:
   sql:
     init:
       mode: always
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

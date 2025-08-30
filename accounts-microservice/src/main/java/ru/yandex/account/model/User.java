@@ -1,14 +1,20 @@
 package ru.yandex.account.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Getter
+@NoArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +24,16 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "password")
+    @Setter
     private String password;
+
+    @Column(name = "birthday")
+    @Setter
+    private LocalDate birthday;
+
+    @Column(name = "username")
+    @Setter
+    private String username;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts;
@@ -36,5 +51,12 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public User(RegistrationForm registrationForm) {
+        this.birthday = LocalDate.parse(registrationForm.getBirthday());
+        this.username = registrationForm.getUsername();
+        this.password = registrationForm.getPassword();
+        this.email = registrationForm.getEmail();
     }
 }
