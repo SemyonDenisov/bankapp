@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: accounts-microservice
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_rk
+    username: postgres
+    password: 1
+  sql:
+    init:
+      mode: always

@@ -1,0 +1,23 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.yandex</groupId>
+    <artifactId>bankapp</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>front-ui-microservice</module>
+        <module>accounts-microservice</module>
+        <module>blocker-microservice</module>
+        <module>cash-microservice</module>
+        <module>exchange-microservice</module>
+        <module>exchange-generator-microservice</module>
+        <module>notifications-microservice</module>
+        <module>transfer-microservice</module>
+    </modules>
+
+</project>
