@@ -1,13 +1,13 @@
-package ru.yndex.chasis;
+package ru.yandex.front.ui;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FrontApplication {
+public class FrontUIApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FrontApplication.class, args);
+		SpringApplication.run(FrontUIApplication.class, args);
 	}
 
 }

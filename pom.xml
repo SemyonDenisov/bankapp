@@ -18,6 +18,8 @@
         <module>exchange-generator-microservice</module>
         <module>notifications-microservice</module>
         <module>transfer-microservice</module>
+        <module>eureka<module>
+        <module>api-gateway<module>
     </modules>
 
 

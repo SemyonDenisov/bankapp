@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8089
 eureka:
   client:
     serviceUrl:
@@ -8,15 +8,7 @@ eureka:
     prefer-ip-address: true
 spring:
   application:
-    name: accounts-microservice
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/auth_rk
-    username: postgres
-    password: 1
-  sql:
-    init:
-      mode: always
+    name: front-ui-microservice
   jackson:
     property-naming-strategy: SNAKE_CASE
 logging:
