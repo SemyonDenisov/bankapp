@@ -20,4 +20,16 @@
         <module>transfer-microservice</module>
     </modules>
 
+
+    <dependencyManagement>
+    <dependencies>
+        <dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<version>4.3.0</version>
+		</dependency>
+    </dependencies>
+</dependencyManagement>
+
+
 </project>

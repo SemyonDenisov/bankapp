@@ -39,14 +39,14 @@ public class AccountController {
     }
 
     @PostMapping("/accounts/withdraw-money")
-    public ResponseEntity<Void> withdraw(@RequestBody AccountDto accountDto, Double amount) {
-        accountService.changeBalance(accountDto, Operation.WITHDRAW, amount);
+    public ResponseEntity<Void> withdraw(@RequestParam(name = "number") String number, Double amount) {
+        accountService.changeBalance(number, Operation.WITHDRAW, amount);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/accounts/put-money")
-    public ResponseEntity<Void> put(@RequestBody AccountDto accountDto, Double amount) {
-        accountService.changeBalance(accountDto, Operation.PUT, amount);
+    public ResponseEntity<Void> put(@RequestParam(name = "number") String number, Double amount) {
+        accountService.changeBalance(number, Operation.PUT, amount);
         return ResponseEntity.ok().build();
     }
 
