@@ -8,7 +8,7 @@
 		<version>3.5.5</version>
 		<relativePath/> 
 	</parent>
-	<groupId>ru.yndex</groupId>
+	<groupId>ru.yandex</groupId>
 	<artifactId>accounts-microservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>accounts-microservice</name>
