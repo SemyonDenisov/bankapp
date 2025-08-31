@@ -1,0 +1,16 @@
+server:
+  port: 8086
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+spring:
+  application:
+    name: transfer-microservice
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

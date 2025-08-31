@@ -32,6 +32,10 @@ public class AccountService {
         return accounts.stream().map(AccountDto::new).toList();
     }
 
+    public Account getAccountByNumber(String number) {
+        return accountRepository.findByNumber(number);
+    }
+
     public void saveAccount(Account account) {
         accountRepository.save(account);
     }
@@ -46,18 +50,19 @@ public class AccountService {
 
     public void changeBalance(String number, Operation operation, Double amount) {
         Account account = accountRepository.findByNumber(number);
-        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var existsNumber = this.getAccountsByEmail(user.getEmail()).stream().filter(account1 -> Objects.equals(account1.getNumber(), number)).count();
-        if (existsNumber > 0) {
-            if (Operation.WITHDRAW == operation) {
+        if (Operation.WITHDRAW == operation) {
+            var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            var existsNumber = this.getAccountsByEmail(user.getEmail()).stream().filter(account1 -> Objects.equals(account1.getNumber(), number)).count();
+            if (existsNumber > 0) {
                 account.setBalance(account.getBalance() - amount);
-            } else if (Operation.PUT == operation) {
-                account.setBalance(account.getBalance() + amount);
             }
-            accountRepository.save(account);
+            else {
+                throw new UsernameNotFoundException(number);
+            }
         }
-        else {
-            throw new UsernameNotFoundException(account.getNumber());
+        else if (Operation.PUT == operation) {
+            account.setBalance(account.getBalance() + amount);
         }
+        accountRepository.save(account);
     }
 }

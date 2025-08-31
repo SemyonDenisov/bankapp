@@ -24,6 +24,11 @@ public class AccountController {
         return new ResponseEntity<>(accountService.getAccountsByEmail("1"), HttpStatus.OK);
     }
 
+    @GetMapping("/accounts/{number}")
+    public ResponseEntity<AccountDto> getAccountByNumber(@PathVariable String number) {
+        return new ResponseEntity<>(new AccountDto(accountService.getAccountByNumber(number)), HttpStatus.OK);
+    }
+
     @PostMapping("/accounts")
     public ResponseEntity<Void> createAccount(@RequestBody NewAccountDto accountDto) {
         var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

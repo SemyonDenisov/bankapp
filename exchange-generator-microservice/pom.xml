@@ -8,10 +8,10 @@
 		<version>3.5.5</version>
 		<relativePath/> 
 	</parent>
-	<groupId>ru.yndex</groupId>
-	<artifactId>cash-microservice</artifactId>
+	<groupId>ru.yandex</groupId>
+	<artifactId>exchange-generator-microservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>cash-microservice</name>
+	<name>exchange-generator-microservice</name>
 	<url/>
 	<licenses>
 		<license/>

@@ -17,15 +17,13 @@ public class CashController {
     }
 
     @PostMapping("/withdraw")
-    public ResponseEntity<Void> withdraw(@RequestParam("amount") double amount) {
-        String number = "777";
+    public ResponseEntity<Void> withdraw(@RequestParam("amount") double amount,@RequestParam("number") String number) {
         cashService.withdraw(number, amount);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/put")
-    public ResponseEntity<Void> put(@RequestParam("amount") double amount) {
-        String number = "777";
+    public ResponseEntity<Void> put(@RequestParam("amount") double amount,@RequestParam("number") String number) {
         cashService.put(number, amount);
         return ResponseEntity.ok().build();
     }
