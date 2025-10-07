@@ -32,9 +32,9 @@ public class NotificationsController {
         notificationsService.saveOldMessagesByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString(), message);
     }
 
-    @GetMapping("/old-notifications")
-    public ResponseEntity<List<String>> getOldNotifications() {
-        var a = notificationsService.getOldMessagesByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        return ResponseEntity.ok(a);
-    }
+        @GetMapping("/old-notifications")
+        public ResponseEntity<List<String>> getOldNotifications() {
+            var a = notificationsService.getOldMessagesByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+            return ResponseEntity.ok(a);
+        }
 }

@@ -9,12 +9,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ru.yandex.transfer.model.CurrencyConversionResponse;
 
 @Service
-@RequiredArgsConstructor
 public class TransferService {
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     public TransferService(RestTemplate restTemplate) {
+
         this.restTemplate = restTemplate;
     }
 
