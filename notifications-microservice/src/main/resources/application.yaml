@@ -1,25 +1,66 @@
-server:
-  port: 8083
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
-    instance-id: api-gateway:127.0.0.1:8083
-    ip-address: 127.0.0.1
-    hostname: localhost
-    non-secure-port: 8083
-    status-page-url: http://127.0.0.1:8083/actuator/info
-    health-check-url: http://127.0.0.1:8083/actuator/health
-    home-page-url: http://127.0.0.1:8083/
+#server:
+#  port: 8083
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:8761/eureka/
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: api-gateway:127.0.0.1:8083
+#    ip-address: 127.0.0.1
+#    hostname: localhost
+#    non-secure-port: 8083
+#    status-page-url: http://127.0.0.1:8083/actuator/info
+#    health-check-url: http://127.0.0.1:8083/actuator/health
+#    home-page-url: http://127.0.0.1:8083/
+#spring:
+#  application:
+#    name: notifications-microservice
+#  jackson:
+#    property-naming-strategy: SNAKE_CASE
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security: DEBUG
+#server:
+#  port: 8086
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:8761/eureka/
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: transfer-microservice:127.0.0.1:8086
+#    ip-address: 127.0.0.1
+#    hostname: localhost
+#    non-secure-port: 8086
+#    status-page-url: http://127.0.0.1:8086/actuator/info
+#    health-check-url: http://127.0.0.1:8086/actuator/health
+#    home-page-url: http://127.0.0.1:8086/
+#spring:
+#  application:
+#    name: transfer-microservice
+#  jackson:
+#    property-naming-strategy: SNAKE_CASE
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security: DEBUG
+
 spring:
   application:
     name: notifications-microservice
-  jackson:
-    property-naming-strategy: SNAKE_CASE
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
+  config:
+    import: "optional:consul:"
+
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      config:
+        enabled: true
+        default-context: application
+        format: yaml
+

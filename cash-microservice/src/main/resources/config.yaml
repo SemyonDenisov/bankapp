@@ -1,0 +1,25 @@
+server:
+  port: 8082
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: cash-microservice:127.0.0.1:8082
+    ip-address: 127.0.0.1
+    hostname: localhost
+    non-secure-port: 8082
+    status-page-url: http://127.0.0.1:8082/actuator/info
+    health-check-url: http://127.0.0.1:8082/actuator/health
+    home-page-url: http://127.0.0.1:8082/
+spring:
+  application:
+    name: cash-microservice
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
