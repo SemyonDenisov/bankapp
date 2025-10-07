@@ -1,4 +1,4 @@
-package ru.yandex.account.service;
+package ru.yandex.cash.service;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

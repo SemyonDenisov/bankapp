@@ -5,13 +5,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.yandex.account.dao.AccountRepository;
 import ru.yandex.account.dao.UserRepository;
-import ru.yandex.account.model.Account;
-import ru.yandex.account.model.AccountDto;
-import ru.yandex.account.model.Operation;
-import ru.yandex.account.model.User;
+import ru.yandex.account.model.*;
+import ru.yandex.account.model.Currency;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class AccountService {
@@ -29,40 +26,124 @@ public class AccountService {
             throw new UsernameNotFoundException(email);
         }
         var accounts = accountRepository.findByUser(user);
-        return accounts.stream().map(AccountDto::new).toList();
+        List<AccountDto> accountsDto = new ArrayList<>();
+        var existedCurrency = accounts.stream().map(Account::getCurrency).toList();
+        Arrays.stream(Currency.values()).forEach(currency -> {
+            if (existedCurrency.contains(currency)) {
+                var accountWithSpecCurrency = accounts.stream().filter(account -> account.getCurrency().equals(currency)).findFirst().get();
+                accountsDto.add(new AccountDto(accountWithSpecCurrency, true));
+            } else {
+                accountsDto.add(new AccountDto(new Account(currency), false));
+            }
+        });
+        return accountsDto;
     }
 
-    public Account getAccountByNumber(String number) {
-        return accountRepository.findByNumber(number);
+    public void updateAccounts(List<Currency> selectedCurrencies) {
+        var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var accounts = accountRepository.findByUser(principal);
+        var existedCurrency = accounts.stream().map(Account::getCurrency).toList();
+        selectedCurrencies.forEach(currency -> {
+            if (!existedCurrency.contains(currency)) {
+                accountRepository.save(new Account(currency, principal));
+            }
+        });
+        accounts.forEach(account -> {
+            if (!selectedCurrencies.contains(account.getCurrency()) && account.getBalance() == 0.0) {
+                accountRepository.delete(account);
+            }
+        });
     }
 
     public void saveAccount(Account account) {
         accountRepository.save(account);
     }
 
-    public void deleteAccount(AccountDto accountDto) {
-        var account = accountRepository.findByNumber(accountDto.getNumber());
-        if (account == null) {
-            throw new UsernameNotFoundException(accountDto.getNumber());
-        }
-        accountRepository.delete(account);
+    public void deleteAccount(AccountDto accountDto, User user) {
+        var accounts = accountRepository.findByUser(user);
+        accounts.stream().filter(account -> account.getCurrency().equals(accountDto.getCurrency()))
+                .findFirst().ifPresent(account -> {
+                    accountRepository.delete(account);
+                });
     }
 
-    public void changeBalance(String number, Operation operation, Double amount) {
-        Account account = accountRepository.findByNumber(number);
-        if (Operation.WITHDRAW == operation) {
-            var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            var existsNumber = this.getAccountsByEmail(user.getEmail()).stream().filter(account1 -> Objects.equals(account1.getNumber(), number)).count();
-            if (existsNumber > 0) {
+    public void changeBalance(Currency currency, Operation operation, Double amount) {
+        var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var accountOpt = accountRepository.findByUserAndCurrency(principal, currency);
+        accountOpt.ifPresentOrElse(account -> {
+                    if (Operation.WITHDRAW == operation) {
+                        if (account.getBalance() >= amount) {
+                            account.setBalance(account.getBalance() - amount);
+                        } else {
+                            throw new UsernameNotFoundException("not enough balance");
+                        }
+                    } else if (Operation.PUT == operation) {
+                        account.setBalance(account.getBalance() + amount);
+                    }
+                    accountRepository.save(account);
+                },
+                () -> new RuntimeException("not exists account"));
+
+    }
+
+    public void putMoneyOnAnotherAccount(String email, Currency currency, Double amount) {
+        var user = userRepository.findByEmail(email);
+        var account = accountRepository.findByUserAndCurrency(user, currency);
+        if (account.isPresent()) {
+            account.get().setBalance(account.get().getBalance() - amount);
+            accountRepository.save(account.get());
+        } else {
+            throw new UsernameNotFoundException("User have no account in this currency");
+        }
+    }
+
+    public Optional<AccountDto> findAccountByUserWithSpecifiedCurrency(Currency currency) {
+        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var accounts = this.getAccountsByEmail(user.getEmail());
+        return accounts.stream()
+                .filter(account -> account.getCurrency().equals(currency))
+                .findFirst();
+    }
+
+    public Boolean withDraw(Currency currency, Double amount) {
+        var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var accountOpt = accountRepository.findByUserAndCurrency(principal, currency);
+        if (accountOpt.isPresent()) {
+            var account = accountOpt.get();
+            if (account.getBalance() >= amount) {
                 account.setBalance(account.getBalance() - amount);
-            }
-            else {
-                throw new UsernameNotFoundException(number);
+                accountRepository.save(account);
+                return true;
+            } else {
+                return false;
             }
         }
-        else if (Operation.PUT == operation) {
+        return false;
+    }
+
+    public Boolean putSelf(Currency currency, Double amount) {
+        var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return put(currency, amount, principal);
+    }
+
+    private boolean put(Currency currency, Double amount, User user) {
+        if (user == null) {
+            return false;
+        }
+        var accountOpt = accountRepository.findByUserAndCurrency(user, currency);
+        if (accountOpt.isPresent()) {
+            var account = accountOpt.get();
             account.setBalance(account.getBalance() + amount);
+            accountRepository.save(account);
+            return true;
         }
-        accountRepository.save(account);
+        return false;
+
+
+    }
+
+    public Boolean putAnother(Currency currency, Double amount, String login) {
+        var user = userRepository.findByEmail(login);
+        return put(currency, amount, user);
     }
 }

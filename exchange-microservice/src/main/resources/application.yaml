@@ -4,6 +4,15 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: api-gateway:127.0.0.1:8085
+    ip-address: 127.0.0.1
+    hostname: localhost
+    non-secure-port: 8085
+    status-page-url: http://127.0.0.1:8085/actuator/info
+    health-check-url: http://127.0.0.1:8085/actuator/health
+    home-page-url: http://127.0.0.1:8085/
 spring:
   application:
     name: exchange-microservice

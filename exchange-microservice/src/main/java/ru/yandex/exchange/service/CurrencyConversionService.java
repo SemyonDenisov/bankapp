@@ -20,7 +20,7 @@ public class CurrencyConversionService {
 
     public CurrencyConversionResponse conversation(CurrencyConversionRequest currencyConversionRequest) {
         double amount = exchange(currencyConversionRequest.getFrom(), currencyConversionRequest.getTo(), currencyConversionRequest.getAmount());
-        if (!currencyConversionRequest.getTo().equals(Currency.RUB)) {
+        if (!currencyConversionRequest.getTo().equals(Currency.RUB)&&currencyConversionRequest.getFrom()!=Currency.RUB) {
             amount = exchange(Currency.RUB, currencyConversionRequest.getTo(), amount);
         }
         return new CurrencyConversionResponse(currencyConversionRequest.getFrom(), currencyConversionRequest.getTo(), amount);

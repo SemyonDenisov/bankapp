@@ -1,4 +1,4 @@
-package ru.yandex.account.security;
+package ru.yandex.cash.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,8 +29,8 @@ public class BlockerFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            Boolean decision = restTemplate.getForObject("http://blocker-microservice/block",Boolean.class);
-            if (Boolean.TRUE.equals(decision)) {
+            var decision = restTemplate.getForEntity("http://blocker-microservice/block",Boolean.class);
+            if (Boolean.TRUE.equals(decision.getBody())) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Suspicious operation");
                 return;
             }

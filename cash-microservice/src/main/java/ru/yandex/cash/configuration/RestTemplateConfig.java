@@ -1,4 +1,4 @@
-package ru.yandex.transfer.configuration;
+package ru.yandex.cash.configuration;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -28,4 +28,5 @@ public class RestTemplateConfig {
         });
         return restTemplate;
     }
+
 }

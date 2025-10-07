@@ -1,34 +1,33 @@
 package ru.yandex.transfer.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.yandex.transfer.model.AccountInfo;
 import ru.yandex.transfer.model.CurrencyConversionResponse;
-import ru.yandex.transfer.model.TransferRequest;
 
 @Service
+@RequiredArgsConstructor
 public class TransferService {
 
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     public TransferService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public void transfer(TransferRequest transferRequest) {
-        if(transferRequest.getFrom().equals(transferRequest.getTo())) {
-            throw new RuntimeException("From and To are the same");
+    public boolean transfer(ru.yandex.front.ui.model.TransferRequest transferRequest) {
+        if (transferRequest.getFromCurrency().equals(transferRequest.getToCurrency()) && transferRequest.getLogin().isEmpty()) {
+            return false;
         }
-        var fromAccountInfo = getRequest("http://accounts-microservice/accounts/" + transferRequest.getFrom(), AccountInfo.class);
-        var toAccountInfo = getRequest("http://accounts-microservice/accounts/" + transferRequest.getTo(), AccountInfo.class);
+
 
         var amountToWithDraw = transferRequest.getAmount();
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://exchange-microservice/conversion")
-                .queryParam("from", fromAccountInfo.getCurrency())
-                .queryParam("to", toAccountInfo.getCurrency())
+                .queryParam("from", transferRequest.getFromCurrency())
+                .queryParam("to", transferRequest.getToCurrency())
                 .queryParam("amount", transferRequest.getAmount());
 
         String urlWithParams = builder.toUriString();
@@ -36,17 +35,19 @@ public class TransferService {
         var currencyConversionResponse = getRequest(urlWithParams, CurrencyConversionResponse.class);
         var amountToPut = currencyConversionResponse.getAmount();
 
-        builder = UriComponentsBuilder.fromUriString("http://accounts-microservice/accounts/withdraw-money")
-                .queryParam("number", fromAccountInfo.getNumber())
+        builder = UriComponentsBuilder.fromUriString("http://accounts-microservice/accounts/withdraw")
+                .queryParam("currency", transferRequest.getFromCurrency())
                 .queryParam("amount", amountToWithDraw);
         urlWithParams = builder.toUriString();
         postRequest(urlWithParams, Void.class);
 
-        builder = UriComponentsBuilder.fromUriString("http://accounts-microservice/accounts/put-money")
-                .queryParam("number", toAccountInfo.getNumber())
-                .queryParam("amount", amountToPut);
+        builder = UriComponentsBuilder.fromUriString("http://accounts-microservice/accounts/put")
+                .queryParam("currency", transferRequest.getToCurrency())
+                .queryParam("amount", amountToPut)
+                .queryParam("login", transferRequest.getLogin());
         urlWithParams = builder.toUriString();
         postRequest(urlWithParams, Void.class);
+        return true;
     }
 
     public <T> T getRequest(String url, Class<T> tClass) {

@@ -1,20 +1,19 @@
-package ru.yandex.account.model;
+package ru.yandex.front.ui.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.yandex.account.validation.Adult;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateUserDto {
-
     private String username;
-
-    @Adult
     private LocalDate birthday;
-
     @JsonProperty("selected_currencies")
     private List<Currency> selectedCurrencies;
 }

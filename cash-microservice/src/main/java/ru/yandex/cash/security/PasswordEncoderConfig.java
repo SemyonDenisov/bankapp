@@ -1,4 +1,4 @@
-package ru.yandex.account.security;
+package ru.yandex.cash.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -9,6 +9,8 @@ import ru.yandex.account.dao.UserRepository;
 import ru.yandex.account.model.RegistrationForm;
 import ru.yandex.account.model.User;
 
+import java.util.List;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -41,5 +43,9 @@ public class UserService implements UserDetailsService {
 
     public void delete(User user) {
         userRepository.delete(user);
+    }
+
+    public List<User> getUsers(){
+        return userRepository.findAll();
     }
 }

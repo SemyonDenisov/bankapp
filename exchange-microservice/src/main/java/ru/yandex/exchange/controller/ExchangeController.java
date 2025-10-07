@@ -37,4 +37,9 @@ public class ExchangeController {
         quotations.forEach(quotation -> currencyStoreService.updateRate(quotation.getCurrency(), quotation.getRate()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/rates")
+    public ResponseEntity<List<CurrencyQuotation>> getRates() {
+        return new ResponseEntity<>(currencyStoreService.getQuotations(), HttpStatus.OK);
+    }
 }

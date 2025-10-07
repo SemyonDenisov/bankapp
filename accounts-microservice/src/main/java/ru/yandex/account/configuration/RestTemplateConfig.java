@@ -1,4 +1,4 @@
-package ru.yandex.transfer.configuration;
+package ru.yandex.account.configuration;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

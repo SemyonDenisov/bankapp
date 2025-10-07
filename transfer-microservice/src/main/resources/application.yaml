@@ -4,6 +4,15 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: transfer-microservice:127.0.0.1:8086
+    ip-address: 127.0.0.1
+    hostname: localhost
+    non-secure-port: 8086
+    status-page-url: http://127.0.0.1:8086/actuator/info
+    health-check-url: http://127.0.0.1:8086/actuator/health
+    home-page-url: http://127.0.0.1:8086/
 spring:
   application:
     name: transfer-microservice

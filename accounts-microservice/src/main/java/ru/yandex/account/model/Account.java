@@ -17,9 +17,6 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "number")
-    private String number;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "currency")
     private Currency currency;
@@ -32,10 +29,13 @@ public class Account {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Account(NewAccountDto newAccountDto, User user) {
+    public Account(Currency currency, User user) {
         this.balance = 0.0;
-        this.currency = newAccountDto.getCurrency();
-        this.number = UUID.randomUUID().toString();
+        this.currency = currency;
         this.user = user;
+    }
+
+    public Account(Currency currency) {
+        this.currency = currency;
     }
 }

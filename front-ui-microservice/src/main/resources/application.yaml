@@ -6,6 +6,13 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+    instance-id: api-gateway:127.0.0.1:8089
+    ip-address: 127.0.0.1
+    hostname: localhost
+    non-secure-port: 8089
+    status-page-url: http://127.0.0.1:8089/actuator/info
+    health-check-url: http://127.0.0.1:8089/actuator/health
+    home-page-url: http://127.0.0.1:8089/
 spring:
   application:
     name: front-ui-microservice
