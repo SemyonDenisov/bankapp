@@ -54,9 +54,9 @@ public class User implements UserDetails {
     }
 
     public User(RegistrationForm registrationForm) {
-        this.birthday = LocalDate.parse(registrationForm.getBirthday());
-        this.username = registrationForm.getUsername();
+        this.birthday = registrationForm.getBirthdate();
+        this.username = registrationForm.getName();
         this.password = registrationForm.getPassword();
-        this.email = registrationForm.getEmail();
+        this.email = registrationForm.getLogin();
     }
 }

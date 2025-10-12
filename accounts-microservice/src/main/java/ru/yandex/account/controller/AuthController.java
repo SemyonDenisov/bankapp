@@ -40,12 +40,12 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<Token> registration(@RequestBody @Valid RegistrationForm registrationForm) {
+    public ResponseEntity<Boolean> registration(@RequestBody RegistrationForm registrationForm) {
         if (!Objects.equals(registrationForm.getPassword(), registrationForm.getConfirmPassword())) {
             throw new BadCredentialsException("Passwords do not match");
         }
         userService.saveNewUser(registrationForm);
-        return login(new LoginForm(registrationForm.getEmail(), registrationForm.getPassword()));
+        return ResponseEntity.ok(true);
     }
 
 

@@ -7,12 +7,14 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import ru.yandex.account.validation.Adult;
 
+import java.time.LocalDate;
+
 
 @Data
 public class RegistrationForm {
     @NotNull
     @Email(message = "Bad email format")
-    private String email;
+    private String login;
     @NotNull
 
     @Length(min = 1, max = 30, message = "Bad password format")
@@ -22,8 +24,9 @@ public class RegistrationForm {
     private String confirmPassword;
 
     @Length(min = 1, max = 30, message = "Bad username format")
-    private String username;
+    @JsonProperty("name")
+    private String name;
 
     @Adult
-    private String birthday;
+    private LocalDate birthdate;
 }

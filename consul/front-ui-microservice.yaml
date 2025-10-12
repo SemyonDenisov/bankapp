@@ -1,0 +1,41 @@
+server:
+  port: 8089
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: api-gateway:127.0.0.1:8089
+    ip-address: 127.0.0.1
+    hostname: localhost
+    non-secure-port: 8089
+    status-page-url: http://127.0.0.1:8089/actuator/info
+    health-check-url: http://127.0.0.1:8089/actuator/health
+    home-page-url: http://127.0.0.1:8089/
+
+jackson:
+  property-naming-strategy: SNAKE_CASE
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/realms/master
+      client:
+        registration:
+          front-ui-microservice:
+            client-id: front-ui-microservice
+            client-secret: a
+            authorization-grant-type: client_credentials
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: http://localhost:8090/realms/master/protocol/openid-connect/token

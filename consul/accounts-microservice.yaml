@@ -1,0 +1,49 @@
+server:
+  port: 8081
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: api-gateway:127.0.0.1:8081
+    ip-address: 127.0.0.1
+    hostname: localhost
+    non-secure-port: 8081
+    status-page-url: http://127.0.0.1:8081/actuator/info
+    health-check-url: http://127.0.0.1:8081/actuator/health
+    home-page-url: http://127.0.0.1:8081/
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/realms/master
+      client:
+        registration:
+          accounts-microservice:
+            client-id: accounts-microservice
+            client-secret: a
+            authorization-grant-type: client_credentials
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: http://localhost:8090/realms/master/protocol/openid-connect/token
+
+  application:
+    name: accounts-microservice
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_rk
+    username: postgres
+    password: 1
+  sql:
+    init:
+      mode: always
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

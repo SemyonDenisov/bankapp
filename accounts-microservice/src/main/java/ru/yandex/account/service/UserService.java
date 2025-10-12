@@ -33,6 +33,7 @@ public class UserService implements UserDetailsService {
 
     public void saveNewUser(RegistrationForm registrationForm) {
         User user = new User(registrationForm);
+        user.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
         userRepository.save(user);
     }
 

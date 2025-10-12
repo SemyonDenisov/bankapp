@@ -11,10 +11,12 @@ import ru.yandex.transfer.model.CurrencyConversionResponse;
 @Service
 public class TransferService {
 
+    ClientCredentialService clientCredentialService;
+
     private final RestTemplate restTemplate;
 
-    public TransferService(RestTemplate restTemplate) {
-
+    public TransferService(RestTemplate restTemplate, ClientCredentialService clientCredentialService) {
+        this.clientCredentialService = clientCredentialService;
         this.restTemplate = restTemplate;
     }
 
@@ -22,6 +24,10 @@ public class TransferService {
         if (transferRequest.getFromCurrency().equals(transferRequest.getToCurrency()) && transferRequest.getLogin().isEmpty()) {
             return false;
         }
+
+        var userToken = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
+
+        var serviceToken = clientCredentialService.getToken();
 
 
         var amountToWithDraw = transferRequest.getAmount();
@@ -32,37 +38,37 @@ public class TransferService {
 
         String urlWithParams = builder.toUriString();
 
-        var currencyConversionResponse = getRequest(urlWithParams, CurrencyConversionResponse.class);
+        var currencyConversionResponse = getRequest(urlWithParams, CurrencyConversionResponse.class, serviceToken);
         var amountToPut = currencyConversionResponse.getAmount();
 
         builder = UriComponentsBuilder.fromUriString("http://accounts-microservice/accounts/withdraw")
                 .queryParam("currency", transferRequest.getFromCurrency())
                 .queryParam("amount", amountToWithDraw);
         urlWithParams = builder.toUriString();
-        postRequest(urlWithParams, Void.class);
+        postRequest(urlWithParams, Void.class, userToken);
 
         builder = UriComponentsBuilder.fromUriString("http://accounts-microservice/accounts/put")
                 .queryParam("currency", transferRequest.getToCurrency())
                 .queryParam("amount", amountToPut)
                 .queryParam("login", transferRequest.getLogin());
         urlWithParams = builder.toUriString();
-        postRequest(urlWithParams, Void.class);
+        postRequest(urlWithParams, Void.class, serviceToken);
         return true;
     }
 
-    public <T> T getRequest(String url, Class<T> tClass) {
+    public <T> T getRequest(String url, Class<T> tClass, String token) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
+        headers.setBearerAuth(token);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         return restTemplate.exchange(url, HttpMethod.GET, entity, tClass).getBody();
     }
 
-    public <T> T postRequest(String url, Class<T> tClass) {
+    public <T> T postRequest(String url, Class<T> tClass, String token) {
         HttpHeaders headers = new HttpHeaders();
 
-        headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
+        headers.setBearerAuth(token);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(url, HttpMethod.POST, entity, tClass).getBody();

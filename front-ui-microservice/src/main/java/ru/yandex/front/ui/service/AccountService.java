@@ -14,9 +14,11 @@ import java.util.List;
 @Service
 public class AccountService {
     RestTemplate restTemplate;
+    ClientCredentialService clientCredentialService;
 
-    public AccountService(RestTemplate restTemplate) {
+    public AccountService(RestTemplate restTemplate, ClientCredentialService clientCredentialService) {
         this.restTemplate = restTemplate;
+        this.clientCredentialService = clientCredentialService;
     }
 
     public void changePassword(String password, String confirmPassword) {
@@ -63,15 +65,14 @@ public class AccountService {
         }).getBody();
     }
 
-    public List<Account> registration(){
+    public Boolean registration(RegistrationForm form) {
         HttpHeaders headers = new HttpHeaders();
 
-        headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
+        headers.setBearerAuth(clientCredentialService.getToken());
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        return restTemplate.exchange("http://accounts-microservice/registration", HttpMethod.POST, entity, new ParameterizedTypeReference<List<Account>>() {
-        }).getBody();
+        HttpEntity<RegistrationForm> entity = new HttpEntity<>(form,headers);
+        var a = restTemplate.exchange("http://accounts-microservice/registration", HttpMethod.POST, entity,Object.class);
+        return true;
     }
 
 }
