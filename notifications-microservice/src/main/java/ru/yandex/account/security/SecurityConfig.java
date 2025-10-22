@@ -31,7 +31,7 @@ public class SecurityConfig {
                     c.configurationSource(corsConfigurationSource());
                 })
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

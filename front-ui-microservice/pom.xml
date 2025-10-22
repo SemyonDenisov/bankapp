@@ -30,6 +30,13 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-dependencies</artifactId>
+			<version>2023.0.1</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
@@ -50,6 +57,19 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot3</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-core</artifactId>
+			<version>2.2.0</version>
 		</dependency>
 
 		<dependency>
@@ -75,6 +95,27 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>ru.yandex</groupId>
+			<artifactId>exchange-microservice</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<classifier>stubs</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.yandex</groupId>
+			<artifactId>transfer-microservice</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<classifier>stubs</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.yandex</groupId>
+			<artifactId>accounts-microservice</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<classifier>stubs</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
@@ -97,6 +138,19 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.6</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
+			<version>4.3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-contract-verifier</artifactId>
+			<version>4.3.0</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>

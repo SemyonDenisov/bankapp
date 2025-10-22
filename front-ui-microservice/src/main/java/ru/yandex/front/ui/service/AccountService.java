@@ -1,5 +1,9 @@
 package ru.yandex.front.ui.service;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.retry.Retry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,10 +19,15 @@ import java.util.List;
 public class AccountService {
     RestTemplate restTemplate;
     ClientCredentialService clientCredentialService;
+    CircuitBreaker circuitBreaker;
+    Retry retry;
+
 
     public AccountService(RestTemplate restTemplate, ClientCredentialService clientCredentialService) {
         this.restTemplate = restTemplate;
         this.clientCredentialService = clientCredentialService;
+        circuitBreaker = CircuitBreaker.ofDefaults("accounts-microservice");
+        retry = Retry.ofDefaults("accounts-microservice");
     }
 
     public void changePassword(String password, String confirmPassword) {
@@ -36,23 +45,27 @@ public class AccountService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        return restTemplate.exchange("http://accounts-microservice/accounts", HttpMethod.GET, entity, new ParameterizedTypeReference<List<Account>>() {
-        }).getBody();
+        return retry.executeSupplier(()->circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://accounts-microservice/accounts", HttpMethod.GET, entity, new ParameterizedTypeReference<List<Account>>() {
+        }).getBody()));
     }
+
 
     public <T> T request(String url, Class<T> tClass, HttpMethod method, Object body) {
         HttpHeaders headers = new HttpHeaders();
 
         headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
 
-        HttpEntity entity = null;
+        HttpEntity entity;
         if (method.equals(HttpMethod.POST)) {
             entity = new HttpEntity<>(body, headers);
         } else if (method.equals(HttpMethod.GET)) {
             entity = new HttpEntity<>(headers);
+        } else {
+            entity = null;
         }
 
-        return restTemplate.exchange(url, method, entity, tClass).getBody();
+        return retry.executeSupplier(()->circuitBreaker.executeSupplier(() -> restTemplate.exchange(url, method, entity, tClass).getBody()));
+
     }
 
     public List<User> getUsers() {
@@ -61,8 +74,8 @@ public class AccountService {
         headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange("http://accounts-microservice/users", HttpMethod.GET, entity, new ParameterizedTypeReference<List<User>>() {
-        }).getBody();
+        return retry.executeSupplier(()->circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://accounts-microservice/users", HttpMethod.GET, entity, new ParameterizedTypeReference<List<User>>() {
+        }).getBody()));
     }
 
     public Boolean registration(RegistrationForm form) {
@@ -70,8 +83,8 @@ public class AccountService {
 
         headers.setBearerAuth(clientCredentialService.getToken());
 
-        HttpEntity<RegistrationForm> entity = new HttpEntity<>(form,headers);
-        var a = restTemplate.exchange("http://accounts-microservice/registration", HttpMethod.POST, entity,Object.class);
+        HttpEntity<RegistrationForm> entity = new HttpEntity<>(form, headers);
+        var a = retry.executeSupplier(()->circuitBreaker.executeSupplier(()->restTemplate.exchange("http://accounts-microservice/registration", HttpMethod.POST, entity, Object.class)));
         return true;
     }
 

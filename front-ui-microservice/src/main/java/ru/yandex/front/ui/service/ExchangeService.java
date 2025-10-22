@@ -1,5 +1,7 @@
 package ru.yandex.front.ui.service;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.retry.Retry;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,17 +18,26 @@ public class ExchangeService {
 
     ClientCredentialService clientCredentialService;
     RestTemplate restTemplate;
+    CircuitBreaker circuitBreaker;
+    Retry retry;
 
     public ExchangeService(ClientCredentialService clientCredentialService, RestTemplate restTemplate) {
         this.clientCredentialService = clientCredentialService;
         this.restTemplate = restTemplate;
+        circuitBreaker = CircuitBreaker.ofDefaults("exchange-microservice");
+        retry = Retry.ofDefaults("exchange-microservice");
     }
 
-    public List<CurrencyQuotation> getRates(){
+    public List<CurrencyQuotation> getRates() {
         var token = clientCredentialService.getToken();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
         HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange("http://exchange-microservice/rates", HttpMethod.GET,entity, new ParameterizedTypeReference<List<CurrencyQuotation>>(){}).getBody();
+        return retry.executeSupplier(() ->
+                circuitBreaker.executeSupplier(() ->
+                        restTemplate.exchange("http://exchange-microservice/rates",
+                                HttpMethod.GET, entity,
+                                new ParameterizedTypeReference<List<CurrencyQuotation>>() {
+                                }).getBody()));
     }
 }

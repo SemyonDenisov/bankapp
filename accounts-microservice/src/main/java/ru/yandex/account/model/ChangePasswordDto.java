@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangePasswordDto {
-    //@Length(min = 1, max = 30, message = "Bad password format")
+
     private String password;
     @JsonProperty("confirm_password")
     private String confirmPassword;

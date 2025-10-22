@@ -1,0 +1,39 @@
+server:
+  port: 8081
+eureka:
+  client:
+    enabled: false
+spring:
+  application:
+    name: accounts-microservice
+  main:
+    allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      client:
+        registration:
+          accounts-microservice:
+            client-id: test-client
+            client-secret: test-secret
+            authorization-grant-type: client_credentials
+        provider:
+          accounts-microservice:
+            token-uri: http://localhost/fake-token
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+    jpa:
+      hibernate:
+        ddl-auto: create-drop
+  sql:
+    init:
+      mode: always
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

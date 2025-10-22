@@ -55,56 +55,6 @@ public class AccountService {
         });
     }
 
-    public void saveAccount(Account account) {
-        accountRepository.save(account);
-    }
-
-    public void deleteAccount(AccountDto accountDto, User user) {
-        var accounts = accountRepository.findByUser(user);
-        accounts.stream().filter(account -> account.getCurrency().equals(accountDto.getCurrency()))
-                .findFirst().ifPresent(account -> {
-                    accountRepository.delete(account);
-                });
-    }
-
-    public void changeBalance(Currency currency, Operation operation, Double amount) {
-        var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var accountOpt = accountRepository.findByUserAndCurrency(principal, currency);
-        accountOpt.ifPresentOrElse(account -> {
-                    if (Operation.WITHDRAW == operation) {
-                        if (account.getBalance() >= amount) {
-                            account.setBalance(account.getBalance() - amount);
-                        } else {
-                            throw new UsernameNotFoundException("not enough balance");
-                        }
-                    } else if (Operation.PUT == operation) {
-                        account.setBalance(account.getBalance() + amount);
-                    }
-                    accountRepository.save(account);
-                },
-                () -> new RuntimeException("not exists account"));
-
-    }
-
-    public void putMoneyOnAnotherAccount(String email, Currency currency, Double amount) {
-        var user = userRepository.findByEmail(email);
-        var account = accountRepository.findByUserAndCurrency(user, currency);
-        if (account.isPresent()) {
-            account.get().setBalance(account.get().getBalance() - amount);
-            accountRepository.save(account.get());
-        } else {
-            throw new UsernameNotFoundException("User have no account in this currency");
-        }
-    }
-
-    public Optional<AccountDto> findAccountByUserWithSpecifiedCurrency(Currency currency) {
-        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var accounts = this.getAccountsByEmail(user.getEmail());
-        return accounts.stream()
-                .filter(account -> account.getCurrency().equals(currency))
-                .findFirst();
-    }
-
     public Boolean withDraw(Currency currency, Double amount) {
         var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var accountOpt = accountRepository.findByUserAndCurrency(principal, currency);

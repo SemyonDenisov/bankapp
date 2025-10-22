@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Getter
+@Setter
 @NoArgsConstructor
 public class User implements UserDetails {
     @Id
@@ -28,11 +29,9 @@ public class User implements UserDetails {
     private String password;
 
     @Column(name = "birthday")
-    @Setter
     private LocalDate birthday;
 
     @Column(name = "username")
-    @Setter
     private String username;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,7 +49,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     public User(RegistrationForm registrationForm) {

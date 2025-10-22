@@ -60,18 +60,6 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(path = {"/", ""})
-    public ResponseEntity<Void> deleteUser() {
-        var user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var accountsSize = accountService.getAccountsByEmail(user.getEmail()).size();
-        if (accountsSize > 0) {
-            throw new RuntimeException("Already have accounts");
-        }
-        userService.delete(user);
-        notificationService.sendNotification("delete user success");
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity.ok(userService.getUsers().stream().map(user -> new UserDto(user.getEmail(),user.getUsername())).toList());

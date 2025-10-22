@@ -1,5 +1,7 @@
 package ru.yandex.cash.service;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.retry.Retry;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -10,10 +12,14 @@ import ru.yandex.cash.model.Currency;
 @Service
 public class CashService {
 
-    RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final CircuitBreaker circuitBreaker;
+    private final Retry retry;
 
     public CashService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        circuitBreaker = CircuitBreaker.ofDefaults("cash-microservice");
+        retry = Retry.ofDefaults("cash-microservice");
     }
 
     public boolean withdraw(Currency currency, double amount) {
@@ -21,7 +27,7 @@ public class CashService {
     }
 
     public boolean put(Currency currency, double amount) {
-       return changeBalance("http://accounts-microservice/accounts/put", currency, amount);
+        return changeBalance("http://accounts-microservice/accounts/put", currency, amount);
     }
 
     public boolean changeBalance(String url, Currency currency, double amount) {
@@ -38,12 +44,19 @@ public class CashService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<Void> response = restTemplate.exchange(
-                urlWithParams,
-                HttpMethod.POST,
-                entity,
-                Void.class
-        );
-        return response.getStatusCode() == HttpStatus.OK;
+        try {
+            ResponseEntity<Void> response = retry.executeSupplier(() ->
+                    circuitBreaker.executeSupplier(() ->
+                            restTemplate.exchange(
+                                    urlWithParams,
+                                    HttpMethod.POST,
+                                    entity,
+                                    Void.class
+                            )));
+            return response.getStatusCode() == HttpStatus.OK;
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 }

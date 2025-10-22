@@ -14,28 +14,9 @@ import java.util.Date;
 public class JwtService {
 
 
-    private final String SECRET = "supersecretkeysupersecretkeysupersecretkey"; // минимум 256 бит
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 час
+    private final String SECRET = "supersecretkeysupersecretkeysupersecretkey";
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
-
-
-    public String generateToken(String email) {
-        return Jwts.builder()
-                .header()
-                .add("typ", "JWT")
-                .and()
-                .subject(email)
-                .expiration(
-                        Date.from(LocalDateTime.now()
-                                .plusMinutes(EXPIRATION)
-                                .atZone(ZoneId.systemDefault())
-                                .toInstant()
-                        )
-                )
-                .signWith(key)
-                .compact();
-    }
 
     public String extractEmail(String token) {
         try {

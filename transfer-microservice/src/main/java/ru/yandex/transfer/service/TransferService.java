@@ -1,5 +1,7 @@
 package ru.yandex.transfer.service;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.retry.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,11 +15,16 @@ public class TransferService {
 
     ClientCredentialService clientCredentialService;
 
+    CircuitBreaker circuitBreaker;
+    Retry retry;
+
     private final RestTemplate restTemplate;
 
     public TransferService(RestTemplate restTemplate, ClientCredentialService clientCredentialService) {
         this.clientCredentialService = clientCredentialService;
         this.restTemplate = restTemplate;
+        circuitBreaker = CircuitBreaker.ofDefaults("transfer-microservice");
+        retry = Retry.ofDefaults("transfer-microservice");
     }
 
     public boolean transfer(ru.yandex.front.ui.model.TransferRequest transferRequest) {
@@ -62,7 +69,12 @@ public class TransferService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        return restTemplate.exchange(url, HttpMethod.GET, entity, tClass).getBody();
+        return retry.executeSupplier(() ->
+                circuitBreaker.executeSupplier(() -> {
+                    var a = restTemplate.exchange(url, HttpMethod.GET, entity, tClass);
+                    return a.getBody();
+                }));
+
     }
 
     public <T> T postRequest(String url, Class<T> tClass, String token) {
@@ -71,7 +83,10 @@ public class TransferService {
         headers.setBearerAuth(token);
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        return restTemplate.exchange(url, HttpMethod.POST, entity, tClass).getBody();
+
+        return retry.executeSupplier(() ->
+                circuitBreaker.executeSupplier(() ->
+                        restTemplate.exchange(url, HttpMethod.POST, entity, tClass).getBody()));
     }
 
 }

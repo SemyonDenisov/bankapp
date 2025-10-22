@@ -1,5 +1,9 @@
 package ru.yandex.exchange.generator.service;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.retry.Retry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,12 +21,17 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class CurrencyService {
 
+    private static final Log log = LogFactory.getLog(CurrencyService.class);
     RestTemplate restTemplate;
     ClientCredentialService clientCredentialService;
+    CircuitBreaker circuitBreaker;
+    Retry retry;
 
     public CurrencyService(RestTemplate restTemplate, ClientCredentialService clientCredentialService) {
         this.restTemplate = restTemplate;
         this.clientCredentialService = clientCredentialService;
+        circuitBreaker = CircuitBreaker.ofDefaults("exchange-microservice");
+        retry = Retry.ofDefaults("exchange-microservice");
     }
 
     @Scheduled(fixedRate = 1000)
@@ -36,12 +45,33 @@ public class CurrencyService {
         headers.setBearerAuth(token);
         HttpEntity<List<CurrencyQuotation>> entity = new HttpEntity<>(quotations, headers);
 
-//
-//        HttpEntity<Void> entity = new HttpEntity<>(headers);
-//        var decision = restTemplate.exchange("http://blocker-microservice/block", HttpMethod.GET,entity,Boolean.class);
 
-        ResponseEntity<Void> response = restTemplate
-                .postForEntity("http://exchange-microservice/update-quotations", entity, Void.class);
+        HttpEntity<Void> blockerEntity = new HttpEntity<>(headers);
+        boolean decision;
+
+        try {
+            decision = retry.executeSupplier(() ->
+                    circuitBreaker.executeSupplier(() ->
+                            restTemplate.exchange(
+                                    "http://blocker-microservice/block",
+                                    HttpMethod.GET,
+                                    blockerEntity,
+                                    Boolean.class
+                            ).getBody()
+                    )
+            );
+        } catch (Exception e) {
+            log.warn("block service not available", e);
+            decision = false;
+        }
+        
+        if (!decision) {
+            retry.executeSupplier(() ->
+                    circuitBreaker.executeSupplier(() -> restTemplate
+                            .postForEntity("http://exchange-microservice/update-quotations", entity, Void.class)));
+        }
+
+
     }
 
     public double generateExchangeRate(Currency currency) {

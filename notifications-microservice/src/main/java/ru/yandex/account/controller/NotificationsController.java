@@ -1,7 +1,6 @@
 package ru.yandex.account.controller;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,9 +31,9 @@ public class NotificationsController {
         notificationsService.saveOldMessagesByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString(), message);
     }
 
-        @GetMapping("/old-notifications")
-        public ResponseEntity<List<String>> getOldNotifications() {
-            var a = notificationsService.getOldMessagesByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-            return ResponseEntity.ok(a);
-        }
+    @GetMapping("/old-notifications")
+    public ResponseEntity<List<String>> getOldNotifications() {
+        var a = notificationsService.getOldMessagesByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        return ResponseEntity.ok(a);
+    }
 }

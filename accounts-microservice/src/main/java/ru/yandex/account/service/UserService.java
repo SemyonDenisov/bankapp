@@ -42,10 +42,6 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void delete(User user) {
-        userRepository.delete(user);
-    }
-
     public List<User> getUsers(){
         return userRepository.findAll();
     }

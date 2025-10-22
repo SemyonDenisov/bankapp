@@ -87,6 +87,12 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.6</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-contract-verifier</artifactId>
+			<version>4.3.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -113,6 +119,16 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-contract-maven-plugin</artifactId>
+				<version>4.0.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<baseClassForTests>ru.yandex.exchange.BaseContractTest</baseClassForTests>
+					<contractsMode>LOCAL</contractsMode>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -1,19 +1,29 @@
 package ru.yandex.front.ui.service;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.retry.Retry;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import ru.yandex.front.ui.model.Account;
 import ru.yandex.front.ui.model.Currency;
+
+import java.util.List;
 
 @Service
 public class CashService {
 
     RestTemplate restTemplate;
+    CircuitBreaker circuitBreaker;
+    Retry retry;
 
     public CashService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        circuitBreaker = CircuitBreaker.ofDefaults("cash-microservice");
+        retry = Retry.ofDefaults("cash-microservice");
     }
 
     public boolean withdraw(Currency currency, double amount) {
@@ -21,6 +31,7 @@ public class CashService {
     }
 
     public boolean put(Currency currency, double amount) {
+
         return changeBalance("http://cash-microservice/put", currency, amount);
     }
 
@@ -38,12 +49,11 @@ public class CashService {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<Void> response = restTemplate.exchange(
+        return retry.executeSupplier(() -> circuitBreaker.executeSupplier(() -> restTemplate.exchange(
                 urlWithParams,
                 HttpMethod.POST,
                 entity,
                 Void.class
-        );
-        return response.getStatusCode() == HttpStatus.OK;
+        ))).getStatusCode().is2xxSuccessful();
     }
 }
