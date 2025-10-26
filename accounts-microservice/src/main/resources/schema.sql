@@ -19,7 +19,7 @@ create table accounts
     constraint fk_user foreign key (user_id) references users (id)
 );
 
-insert into users(id, email, password,username,birthday) values (0, '1', '$2a$12$dyoEluTPU24KZr/LrdEvHuExnGPX4FRM/HWWvWa7t1LAy7EvVZM8W','senja',DATE '2005-08-30');
+insert into users(id, email, password,username,birthday) values (0, '1', '$2a$12$dyoEluTPU24KZr/LrdEvHuExnGPX4FRM/HWWvWa7t1LAy7EvVZM8W','user1',DATE '2005-08-30');
 insert into accounts(id, number, balance, currency, user_id) values (0, '777', 70.0, 'RUB', 0);
-insert into users(id, email, password,username,birthday) values (300, '2', '$2a$12$dyoEluTPU24KZr/LrdEvHuExnGPX4FRM/HWWvWa7t1LAy7EvVZM8W','nesenja',DATE '2005-08-30');
+insert into users(id, email, password,username,birthday) values (300, '2', '$2a$12$dyoEluTPU24KZr/LrdEvHuExnGPX4FRM/HWWvWa7t1LAy7EvVZM8W','user2',DATE '2005-08-30');
 insert into accounts(id, number, balance, currency, user_id) values (300, '777', 170.0, 'RUB', 300);
