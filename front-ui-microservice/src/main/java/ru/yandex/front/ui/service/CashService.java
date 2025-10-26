@@ -27,12 +27,12 @@ public class CashService {
     }
 
     public boolean withdraw(Currency currency, double amount) {
-        return changeBalance("http://cash-microservice/withdraw", currency, amount);
+        return changeBalance("http://api-gateway/cash/withdraw", currency, amount);
     }
 
     public boolean put(Currency currency, double amount) {
 
-        return changeBalance("http://cash-microservice/put", currency, amount);
+        return changeBalance("http://api-gateway/cash/put", currency, amount);
     }
 
     public boolean changeBalance(String url, Currency currency, double amount) {

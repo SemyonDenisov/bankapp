@@ -2,13 +2,12 @@ server:
   port: 8081
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+    service-url:
+      defaultZone: http://eureka:8761/eureka
   instance:
-    prefer-ip-address: true
-    instance-id: api-gateway:127.0.0.1:8081
-    ip-address: 127.0.0.1
-    hostname: localhost
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${server.port}
+    hostname: ${spring.application.name}  
     non-secure-port: 8081
     status-page-url: http://127.0.0.1:8081/actuator/info
     health-check-url: http://127.0.0.1:8081/actuator/health
@@ -18,7 +17,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8090/realms/master
+          issuer-uri: http://keycloak:8080/realms/master
       client:
         registration:
           accounts-microservice:
@@ -28,15 +27,21 @@ spring:
             provider: keycloak
         provider:
           keycloak:
-            token-uri: http://localhost:8090/realms/master/protocol/openid-connect/token
+            token-uri: http://keycloak:8080/realms/master/protocol/openid-connect/token
 
   application:
     name: accounts-microservice
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/auth_rk
-    username: postgres
-    password: 1
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
   sql:
     init:
       mode: always

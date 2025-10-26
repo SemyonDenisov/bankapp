@@ -24,7 +24,7 @@ import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureStubRunner(
-        ids = "ru.yandex:accounts-microservice:+:stubs:8080",
+        ids = "ru.yandex:accounts-microservice:+:stubs:8077",
         stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )
 @ActiveProfiles("test")
@@ -38,7 +38,7 @@ public class AccountsTests extends BaseContractTest {
     @Test
     void shouldPutCashSuccessfully() {
         URI uri = UriComponentsBuilder
-                .fromHttpUrl("http://localhost:8080/accounts/put")
+                .fromHttpUrl("http://localhost:8077/accounts/put")
                 .queryParam("currency", "RUB")
                 .queryParam("amount", "100.0")
                 .queryParam("login", "user@example.com")
@@ -54,7 +54,7 @@ public class AccountsTests extends BaseContractTest {
 
     @Test
     public void shouldReturnAccountsListAsPerContract() {
-        String url = "http://localhost:8080/accounts";
+        String url = "http://localhost:8077/accounts";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer 123");
@@ -81,7 +81,7 @@ public class AccountsTests extends BaseContractTest {
 
     @Test
     public void shouldReturn200WhenPutCashAnotherSuccess() {
-        String url = "http://localhost:8080/accounts/put?currency=USD&amount=500.0&login=user@example.com";
+        String url = "http://localhost:8077/accounts/put?currency=USD&amount=500.0&login=user@example.com";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer 123");
@@ -95,7 +95,7 @@ public class AccountsTests extends BaseContractTest {
 
     @Test
     public void shouldReturn200WhenWithdrawCashSuccess() {
-        String url = "http://localhost:8080/accounts/withdraw?currency=USD&amount=200.0";
+        String url = "http://localhost:8077/accounts/withdraw?currency=USD&amount=200.0";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer some-valid-token");

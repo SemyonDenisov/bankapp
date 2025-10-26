@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @AutoConfigureStubRunner(
-        ids = "ru.yandex:exchange-microservice:+:stubs:8081",
+        ids = "ru.yandex:exchange-microservice:+:stubs:8078",
         stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )
 @ActiveProfiles("test")
@@ -28,7 +28,7 @@ public class ExchangeTests extends BaseContractProviderTest {
 
     @Test
     void shouldReturnCurrencyRates() {
-        String url = "http://localhost:8081/rates";
+        String url = "http://localhost:8078/rates";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer 123");
@@ -46,7 +46,7 @@ public class ExchangeTests extends BaseContractProviderTest {
 
     @Test
     void shouldAcceptUpdateQuotations() {
-        String url = "http://localhost:8081/update-quotations";
+        String url = "http://localhost:8078/update-quotations";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer 123");
@@ -67,7 +67,7 @@ public class ExchangeTests extends BaseContractProviderTest {
 
     @Test
     void shouldConvertCurrencySuccessfully() {
-        String url = "http://localhost:8081/conversion?from=USD&to=EUR&amount=100.0";
+        String url = "http://localhost:8078/conversion?from=USD&to=EUR&amount=100.0";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer 123");

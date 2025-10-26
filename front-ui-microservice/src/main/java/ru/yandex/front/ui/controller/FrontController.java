@@ -1,6 +1,7 @@
 package ru.yandex.front.ui.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
+@Slf4j
 public class FrontController {
 
     TransferService transferService;
@@ -53,6 +55,7 @@ public class FrontController {
         model.addAttribute("currency", currencies);
         model.addAttribute("currencyToSend", Currency.values());
         var users = accountService.getUsers();
+        log.info("\n\n{}\n\n", users);
         model.addAttribute("users", users);
         model.addAttribute("jwtToken", SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
         model.addAttribute("clientCredentialToken", clientCredentialService.getToken());

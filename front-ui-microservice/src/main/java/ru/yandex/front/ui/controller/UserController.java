@@ -1,6 +1,7 @@
 package ru.yandex.front.ui.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
     TransferService transferService;
     AccountService accountService;
@@ -76,9 +78,10 @@ public class UserController {
     public String transfer(@RequestParam(name = "from_currency") Currency currencyFrom,
                            @RequestParam(name = "to_currency") Currency currencyTo,
                            @RequestParam(name = "value") Double value,
-                           @RequestParam(name = "to_login", required = false) String login,
+                           @RequestParam(name = "to_login", defaultValue = "") String login,
                            RedirectAttributes redirectAttributes) {
 
+        log.info("\n\n\n{}\n\n\n", login);
         if (login != null && !login.isEmpty()) {
             transferService.transferToAnother(currencyFrom, currencyTo, value, login);
         } else {

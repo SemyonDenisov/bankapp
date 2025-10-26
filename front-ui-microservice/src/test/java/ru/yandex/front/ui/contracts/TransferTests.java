@@ -16,7 +16,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @AutoConfigureStubRunner(
-        ids = "ru.yandex:transfer-microservice:+:stubs:8083",
+        ids = "ru.yandex:transfer-microservice:+:stubs:8075",
         stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )
 @ActiveProfiles("test")
@@ -33,7 +33,7 @@ public class TransferTests extends BaseContractTest{
 
     @Test
     void shouldTransferSuccessfullyAccordingToContract() {
-        String url = "http://localhost:8083/transfer";
+        String url = "http://localhost:8075/transfer";
 
         Map<String, Object> requestBody = Map.of(
                 "from_currency", "EUR",

@@ -49,6 +49,7 @@ public abstract class BaseContractTest {
         RestAssuredMockMvc.mockMvc(mockMvc);
         var auth = new UsernamePasswordAuthenticationToken(null, "123", List.of());
         SecurityContextHolder.getContext().setAuthentication(auth);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(HttpEntity.class), eq(Void.class))).thenReturn(ResponseEntity.ok().build());
     }
 
     @Configuration

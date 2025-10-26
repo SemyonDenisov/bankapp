@@ -35,7 +35,7 @@ public class ExchangeService {
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         return retry.executeSupplier(() ->
                 circuitBreaker.executeSupplier(() ->
-                        restTemplate.exchange("http://exchange-microservice/rates",
+                        restTemplate.exchange("http://api-gateway/exchange/rates",
                                 HttpMethod.GET, entity,
                                 new ParameterizedTypeReference<List<CurrencyQuotation>>() {
                                 }).getBody()));

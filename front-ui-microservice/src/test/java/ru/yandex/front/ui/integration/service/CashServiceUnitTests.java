@@ -53,7 +53,7 @@ public class CashServiceUnitTests {
     void testWithdraw_Success() {
         ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.OK);
         when(restTemplate.exchange(
-                contains("http://cash-microservice/withdraw"),
+                contains("/withdraw"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Void.class)
@@ -68,7 +68,7 @@ public class CashServiceUnitTests {
     void testPut_Success() {
         ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.OK);
         when(restTemplate.exchange(
-                contains("http://cash-microservice/put"),
+                contains("/put"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Void.class)
@@ -86,7 +86,7 @@ public class CashServiceUnitTests {
         ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.OK);
 
         when(restTemplate.exchange(
-                anyString(),
+                contains("/put"),
                 eq(HttpMethod.POST),
                 entityCaptor.capture(),
                 eq(Void.class)

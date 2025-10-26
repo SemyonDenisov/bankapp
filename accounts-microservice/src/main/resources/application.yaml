@@ -65,7 +65,7 @@ spring:
 
   cloud:
     consul:
-      host: localhost
+      host: host.docker.internal
       port: 8500
       config:
         enabled: true

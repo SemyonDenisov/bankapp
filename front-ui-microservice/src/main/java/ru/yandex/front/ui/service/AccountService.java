@@ -31,11 +31,11 @@ public class AccountService {
     }
 
     public void changePassword(String password, String confirmPassword) {
-        request("http://accounts-microservice/users/change-password", Void.class, HttpMethod.POST, new ChangePasswordDto(password, confirmPassword));
+        request("http://api-gateway/accounts/users/change-password", Void.class, HttpMethod.POST, new ChangePasswordDto(password, confirmPassword));
     }
 
     public void editAccount(String name, LocalDate birthDate, List<Currency> selectedCurrencies) {
-        request("http://accounts-microservice/users/edit", Void.class, HttpMethod.POST, new UpdateUserDto(name, birthDate, selectedCurrencies));
+        request("http://api-gateway/accounts/users/edit", Void.class, HttpMethod.POST, new UpdateUserDto(name, birthDate, selectedCurrencies));
     }
 
     public List<Account> getAccounts() {
@@ -74,7 +74,7 @@ public class AccountService {
         headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        return retry.executeSupplier(()->circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://accounts-microservice/users", HttpMethod.GET, entity, new ParameterizedTypeReference<List<User>>() {
+        return retry.executeSupplier(()->circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://api-gateway/accounts/users", HttpMethod.GET, entity, new ParameterizedTypeReference<List<User>>() {
         }).getBody()));
     }
 
@@ -84,7 +84,7 @@ public class AccountService {
         headers.setBearerAuth(clientCredentialService.getToken());
 
         HttpEntity<RegistrationForm> entity = new HttpEntity<>(form, headers);
-        var a = retry.executeSupplier(()->circuitBreaker.executeSupplier(()->restTemplate.exchange("http://accounts-microservice/registration", HttpMethod.POST, entity, Object.class)));
+        var a = retry.executeSupplier(()->circuitBreaker.executeSupplier(()->restTemplate.exchange("http://api-gateway/accounts/registration", HttpMethod.POST, entity, Object.class)));
         return true;
     }
 

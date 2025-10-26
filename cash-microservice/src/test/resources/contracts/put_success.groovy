@@ -10,7 +10,7 @@ Contract.make {
         urlPath('/put') {
             queryParameters {
                 parameter 'currency': 'USD'
-                parameter 'amount': 500.0
+                parameter 'amount': '500.0'
             }
         }
     }

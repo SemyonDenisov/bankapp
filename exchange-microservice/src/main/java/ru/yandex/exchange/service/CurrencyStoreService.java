@@ -16,6 +16,12 @@ public class CurrencyStoreService {
 
     private final Map<Currency, Double> rates = new ConcurrentHashMap<>();
 
+    public CurrencyStoreService() {
+        rates.put(Currency.USD, 86.0);
+        rates.put(Currency.EUR, 86.0);
+        rates.put(Currency.RUB, 1.0);
+    }
+
     public void updateRate(Currency currency, double rate) {
         rates.put(currency, rate);
     }

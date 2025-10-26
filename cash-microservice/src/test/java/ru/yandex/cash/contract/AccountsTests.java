@@ -21,7 +21,7 @@ import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureStubRunner(
-        ids = "ru.yandex:accounts-microservice:+:stubs:8080",
+        ids = "ru.yandex:accounts-microservice:+:stubs:8074",
         stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )
 @ActiveProfiles("test")
@@ -35,7 +35,7 @@ public class AccountsTests {
 
 
         URI uri = UriComponentsBuilder
-                .fromHttpUrl("http://localhost:8080/accounts/put")
+                .fromHttpUrl("http://localhost:8074/accounts/put")
                 .queryParam("currency", "RUB")
                 .queryParam("amount", "100.0")
                 .queryParam("login", "user@example.com")
@@ -51,7 +51,7 @@ public class AccountsTests {
 
     @Test
     public void shouldReturnAccountsListAsPerContract() {
-        String url = "http://localhost:8080/accounts";
+        String url = "http://localhost:8074/accounts";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer 123");
@@ -78,7 +78,7 @@ public class AccountsTests {
 
     @Test
     public void shouldReturn200WhenPutCashAnotherSuccess() {
-        String url = "http://localhost:8080/accounts/put?currency=USD&amount=500.0&login=user@example.com";
+        String url = "http://localhost:8074/accounts/put?currency=USD&amount=500.0&login=user@example.com";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer 123");
@@ -92,7 +92,7 @@ public class AccountsTests {
 
     @Test
     public void shouldReturn200WhenWithdrawCashSuccess() {
-        String url = "http://localhost:8080/accounts/withdraw?currency=USD&amount=200.0";
+        String url = "http://localhost:8074/accounts/withdraw?currency=USD&amount=200.0";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer some-valid-token");

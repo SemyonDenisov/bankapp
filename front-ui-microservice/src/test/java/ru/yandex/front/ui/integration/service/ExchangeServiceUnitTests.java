@@ -55,7 +55,7 @@ class ExchangeServiceUnitTests {
         ResponseEntity<List<CurrencyQuotation>> response = new ResponseEntity<>(mockRates, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                eq("http://exchange-microservice/rates"),
+                contains("/rates"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 ArgumentMatchers.<ParameterizedTypeReference<List<CurrencyQuotation>>>any()
@@ -68,7 +68,7 @@ class ExchangeServiceUnitTests {
         assertEquals(Currency.USD, result.get(0).getCurrency());
         verify(clientCredentialService).getToken();
         verify(restTemplate).exchange(
-                eq("http://exchange-microservice/rates"),
+                contains("/rates"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
@@ -80,7 +80,7 @@ class ExchangeServiceUnitTests {
         ResponseEntity<List<CurrencyQuotation>> response = new ResponseEntity<>(List.of(), HttpStatus.OK);
 
         when(restTemplate.exchange(
-                eq("http://exchange-microservice/rates"),
+                contains("/rates"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 ArgumentMatchers.<ParameterizedTypeReference<List<CurrencyQuotation>>>any()
@@ -98,7 +98,7 @@ class ExchangeServiceUnitTests {
 
         ResponseEntity<List<CurrencyQuotation>> response = new ResponseEntity<>(List.of(), HttpStatus.OK);
         when(restTemplate.exchange(
-                eq("http://exchange-microservice/rates"),
+                contains("/rates"),
                 eq(HttpMethod.GET),
                 captor.capture(),
                 any(ParameterizedTypeReference.class)

@@ -63,7 +63,7 @@ public abstract class BaseContractTest {
         ResponseEntity<CurrencyConversionResponse> responseEntity = new ResponseEntity<>(response, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                contains("exchange-microservice/conversion"),
+                contains("conversion"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 eq(CurrencyConversionResponse.class)
@@ -72,18 +72,19 @@ public abstract class BaseContractTest {
         ResponseEntity<Void> voidResponse = new ResponseEntity<>(HttpStatus.OK);
 
         when(restTemplate.exchange(
-                contains("accounts-microservice/accounts/withdraw"),
+                contains("accounts/withdraw"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Void.class)
         )).thenReturn(voidResponse);
 
         when(restTemplate.exchange(
-                contains("accounts-microservice/accounts/put"),
+                contains("accounts/put"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Void.class)
         )).thenReturn(voidResponse);
+        when(clientCredentialService.getToken()).thenReturn("asac");
     }
 
     @Configuration

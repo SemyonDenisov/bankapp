@@ -94,27 +94,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>ru.yandex</groupId>
-			<artifactId>exchange-microservice</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<classifier>stubs</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>ru.yandex</groupId>
-			<artifactId>transfer-microservice</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<classifier>stubs</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>ru.yandex</groupId>
-			<artifactId>accounts-microservice</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<classifier>stubs</classifier>
-			<scope>test</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>

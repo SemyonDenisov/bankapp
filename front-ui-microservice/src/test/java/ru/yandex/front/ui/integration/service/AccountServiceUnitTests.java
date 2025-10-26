@@ -56,7 +56,7 @@ public class AccountServiceUnitTests {
 
         when(clientCredentialService.getToken()).thenReturn(token);
         when(restTemplate.exchange(
-                eq("http://accounts-microservice/registration"),
+                contains("/registration"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Object.class)
@@ -66,7 +66,7 @@ public class AccountServiceUnitTests {
 
         assertTrue(result);
         verify(restTemplate).exchange(
-                eq("http://accounts-microservice/registration"),
+                contains("/registration"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Object.class)

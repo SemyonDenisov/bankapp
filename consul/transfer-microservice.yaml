@@ -2,23 +2,21 @@ server:
   port: 8086
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+    service-url:
+      defaultZone: http://eureka:8761/eureka
   instance:
-    prefer-ip-address: true
-    instance-id: transfer-microservice:127.0.0.1:8086
-    ip-address: 127.0.0.1
-    hostname: localhost
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${server.port}
+    hostname: ${spring.application.name}  
     non-secure-port: 8086
-    status-page-url: http://127.0.0.1:8086/actuator/info
-    health-check-url: http://127.0.0.1:8086/actuator/health
-    home-page-url: http://127.0.0.1:8086/
+    status-page-url: /actuator/info
+    health-check-url: /actuator/health
 spring:
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8090/realms/master
+          issuer-uri: http://keycloak:8080/realms/master
       client:
         registration:
           transfer-microservice:
@@ -28,9 +26,7 @@ spring:
             provider: keycloak
         provider:
           keycloak:
-            token-uri: http://localhost:8090/realms/master/protocol/openid-connect/token
-  application:
-    name: transfer-microservice
+            token-uri: http://keycloak:8080/realms/master/protocol/openid-connect/token  
   jackson:
     property-naming-strategy: SNAKE_CASE
 logging:

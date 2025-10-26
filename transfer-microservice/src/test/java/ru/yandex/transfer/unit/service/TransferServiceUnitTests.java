@@ -68,21 +68,21 @@ public class TransferServiceUnitTests {
         ResponseEntity<Void> voidResponse = new ResponseEntity<>(HttpStatus.OK);
 
         when(restTemplate.exchange(
-                contains("http://exchange-microservice/conversion"),
+                contains("/conversion"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 eq(CurrencyConversionResponse.class))
         ).thenReturn(conversionResponseEntity);
 
         when(restTemplate.exchange(
-                contains("http://accounts-microservice/accounts/withdraw"),
+                contains("/accounts/withdraw"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Void.class))
         ).thenReturn(voidResponse);
 
         when(restTemplate.exchange(
-                contains("http://accounts-microservice/accounts/put"),
+                contains("/accounts/put"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Void.class))
@@ -94,7 +94,7 @@ public class TransferServiceUnitTests {
         assertTrue(result);
 
         verify(restTemplate, times(1)).exchange(
-                contains("http://exchange-microservice/conversion"),
+                contains("/conversion"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 eq(CurrencyConversionResponse.class)

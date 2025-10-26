@@ -17,6 +17,7 @@ import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
@@ -45,6 +46,7 @@ public class CashServiceUnitTests {
 
     @BeforeEach
     void setUp() {
+        reset(restTemplate);
         Authentication authentication = mock(Authentication.class);
         when(authentication.getDetails()).thenReturn("mock-token");
 
@@ -58,7 +60,7 @@ public class CashServiceUnitTests {
     void testWithdraw_Success() {
         ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.OK);
         when(restTemplate.exchange(
-                contains("http://cash-microservice/withdraw"),
+                contains("/withdraw"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Void.class)
@@ -73,7 +75,7 @@ public class CashServiceUnitTests {
     void testPut_Success() {
         ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.OK);
         when(restTemplate.exchange(
-                contains("http://cash-microservice/put"),
+                contains("/put"),
                 eq(HttpMethod.POST),
                 any(HttpEntity.class),
                 eq(Void.class)
@@ -91,13 +93,13 @@ public class CashServiceUnitTests {
         ResponseEntity<Void> response = new ResponseEntity<>(HttpStatus.OK);
 
         when(restTemplate.exchange(
-                anyString(),
+                contains("/put"),
                 eq(HttpMethod.POST),
                 entityCaptor.capture(),
                 eq(Void.class)
         )).thenReturn(response);
 
-        cashService.changeBalance("http://cash-microservice/put", Currency.USD, 123.45);
+        cashService.changeBalance("http://api-gateway/cash/put", Currency.USD, 123.45);
 
         HttpHeaders headers = entityCaptor.getValue().getHeaders();
         assertTrue(headers.containsKey(HttpHeaders.AUTHORIZATION));

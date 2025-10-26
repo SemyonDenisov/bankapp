@@ -1,5 +1,6 @@
 package ru.yandex.front.ui.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -18,6 +19,7 @@ import ru.yandex.front.ui.model.Token;
 import java.util.List;
 
 @Component
+@Slf4j
 public class ExternalAuthenticationProvider implements AuthenticationProvider {
 
     private final RestTemplate restTemplate;
@@ -31,13 +33,11 @@ public class ExternalAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        // DTO для запроса
         var loginForm = new LoginForm(username, password);
 
         try {
-            // Отправляем запрос во внешний сервис аутентификации
             ResponseEntity<Token> response = restTemplate.postForEntity(
-                    "http://accounts-microservice/login",
+                    "http://api-gateway/accounts/login",
                     loginForm,
                     Token.class
             );
@@ -47,7 +47,6 @@ public class ExternalAuthenticationProvider implements AuthenticationProvider {
 
                 List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
-                // Можно сохранить токен в details, чтобы потом использовать
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(username, password, authorities);
                 auth.setDetails(token);
@@ -64,20 +63,6 @@ public class ExternalAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-    }
-
-    // Вспомогательный класс для десериализации ответа
-    public static class AuthResponse {
-        private String token;
-
-        // геттеры и сеттеры
-        public String getToken() {
-            return token;
-        }
-
-        public void setToken(String token) {
-            this.token = token;
-        }
     }
 }
 

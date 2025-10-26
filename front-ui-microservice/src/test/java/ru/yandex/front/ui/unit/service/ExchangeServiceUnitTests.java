@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @Import(TestSecurityConfig.class)
+@DirtiesContext
 class ExchangeServiceUnitTests {
 
     @MockitoBean
@@ -43,6 +45,7 @@ class ExchangeServiceUnitTests {
     @BeforeEach
     void setUp() {
         when(clientCredentialService.getToken()).thenReturn(token);
+        reset(restTemplate);
     }
 
     @Test
@@ -54,7 +57,7 @@ class ExchangeServiceUnitTests {
         ResponseEntity<List<CurrencyQuotation>> response = new ResponseEntity<>(mockRates, HttpStatus.OK);
 
         when(restTemplate.exchange(
-                eq("http://exchange-microservice/rates"),
+                eq("http://api-gateway/exchange/rates"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 ArgumentMatchers.<ParameterizedTypeReference<List<CurrencyQuotation>>>any()
@@ -67,7 +70,7 @@ class ExchangeServiceUnitTests {
         assertEquals(Currency.USD, result.get(0).getCurrency());
         verify(clientCredentialService).getToken();
         verify(restTemplate).exchange(
-                eq("http://exchange-microservice/rates"),
+                contains("/rates"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 any(ParameterizedTypeReference.class)
@@ -79,7 +82,7 @@ class ExchangeServiceUnitTests {
         ResponseEntity<List<CurrencyQuotation>> response = new ResponseEntity<>(List.of(), HttpStatus.OK);
 
         when(restTemplate.exchange(
-                eq("http://exchange-microservice/rates"),
+                contains("/rates"),
                 eq(HttpMethod.GET),
                 any(HttpEntity.class),
                 ArgumentMatchers.<ParameterizedTypeReference<List<CurrencyQuotation>>>any()
@@ -97,7 +100,7 @@ class ExchangeServiceUnitTests {
 
         ResponseEntity<List<CurrencyQuotation>> response = new ResponseEntity<>(List.of(), HttpStatus.OK);
         when(restTemplate.exchange(
-                eq("http://exchange-microservice/rates"),
+                contains("/rates"),
                 eq(HttpMethod.GET),
                 captor.capture(),
                 any(ParameterizedTypeReference.class)

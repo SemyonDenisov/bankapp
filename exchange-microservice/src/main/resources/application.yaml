@@ -57,10 +57,15 @@ spring:
 
   cloud:
     consul:
-      host: localhost
+      host: host.docker.internal
       port: 8500
       config:
         enabled: true
         default-context: application
         format: yaml
 
+logging:
+  level:
+    org.springframework.cloud.consul: DEBUG
+    org.springframework.boot.context.config: DEBUG
+    org.springframework.cloud.bootstrap: DEBUG

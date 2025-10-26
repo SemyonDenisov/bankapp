@@ -3,6 +3,7 @@ package ru.yandex.transfer.service;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.retry.Retry;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ru.yandex.transfer.model.CurrencyConversionResponse;
 
 @Service
+@Slf4j
 public class TransferService {
 
     ClientCredentialService clientCredentialService;
@@ -28,7 +30,9 @@ public class TransferService {
     }
 
     public boolean transfer(ru.yandex.front.ui.model.TransferRequest transferRequest) {
-        if (transferRequest.getFromCurrency().equals(transferRequest.getToCurrency()) && transferRequest.getLogin().isEmpty()) {
+        if (transferRequest.getFromCurrency().equals(transferRequest.getToCurrency())
+                && (transferRequest.getLogin() == null || transferRequest.getLogin().isEmpty())) {
+            log.info("hereeeeeeeeeeeeeeeeeeeeeeee");
             return false;
         }
 
@@ -38,7 +42,7 @@ public class TransferService {
 
 
         var amountToWithDraw = transferRequest.getAmount();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://exchange-microservice/conversion")
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://api-gateway/exchange/conversion")
                 .queryParam("from", transferRequest.getFromCurrency())
                 .queryParam("to", transferRequest.getToCurrency())
                 .queryParam("amount", transferRequest.getAmount());
@@ -48,18 +52,21 @@ public class TransferService {
         var currencyConversionResponse = getRequest(urlWithParams, CurrencyConversionResponse.class, serviceToken);
         var amountToPut = currencyConversionResponse.getAmount();
 
-        builder = UriComponentsBuilder.fromUriString("http://accounts-microservice/accounts/withdraw")
+        builder = UriComponentsBuilder.fromUriString("http://api-gateway/accounts/accounts/withdraw")
                 .queryParam("currency", transferRequest.getFromCurrency())
                 .queryParam("amount", amountToWithDraw);
         urlWithParams = builder.toUriString();
         postRequest(urlWithParams, Void.class, userToken);
 
-        builder = UriComponentsBuilder.fromUriString("http://accounts-microservice/accounts/put")
+        builder = UriComponentsBuilder.fromUriString("http://api-gateway/accounts/accounts/put")
                 .queryParam("currency", transferRequest.getToCurrency())
                 .queryParam("amount", amountToPut)
                 .queryParam("login", transferRequest.getLogin());
         urlWithParams = builder.toUriString();
-        postRequest(urlWithParams, Void.class, serviceToken);
+        log.info("\n{}\n", serviceToken);
+        log.info("\n{}\n", transferRequest.getLogin());
+        postRequest(urlWithParams, Void.class, userToken);
+
         return true;
     }
 
