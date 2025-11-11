@@ -1,0 +1,4 @@
+apiVersion: v2
+name: notifications-microservice
+version: 0.1.0
+description: Helm chart for notifications-microservice

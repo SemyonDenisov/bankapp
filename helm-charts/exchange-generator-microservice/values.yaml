@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: exchange-generator-microservice
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8084

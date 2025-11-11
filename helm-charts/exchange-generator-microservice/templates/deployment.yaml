@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exchange-generator-microservice
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: exchange-generator-microservice
+  template:
+    metadata:
+      labels:
+        app: exchange-generator-microservice
+    spec:
+      containers:
+      - name: exchange-generator-microservice
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8084

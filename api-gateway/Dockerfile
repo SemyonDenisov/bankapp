@@ -1,4 +1,4 @@
-FROM openjdk:21
+FROM openjdk:21-ea-26-jdk-oracle
 
 ENV TZ=Europe/Samara
 

@@ -1,0 +1,78 @@
+{
+  "realm": "master",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "accounts-microservice",
+      "secret": "a",
+      "protocol": "openid-connect",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "publicClient": false,
+      "redirectUris": ["*"]
+    },
+    {
+        "clientId": "blocker-microservice",
+        "secret": "a",
+        "protocol": "openid-connect",
+        "serviceAccountsEnabled": true,
+        "standardFlowEnabled": false,
+        "publicClient": false,
+        "redirectUris": ["*"]
+      },
+      {
+        "clientId": "cash-microservice",
+        "secret": "a",
+        "protocol": "openid-connect",
+        "serviceAccountsEnabled": true,
+        "standardFlowEnabled": false,
+        "publicClient": false,
+        "redirectUris": ["*"]
+      },
+      {
+        "clientId": "exchange-generator-microservice",
+        "secret": "a",
+        "protocol": "openid-connect",
+        "serviceAccountsEnabled": true,
+        "standardFlowEnabled": false,
+        "publicClient": false,
+        "redirectUris": ["*"]
+      },
+      {
+        "clientId": "exchange-microservice",
+        "secret": "a",
+        "protocol": "openid-connect",
+        "serviceAccountsEnabled": true,
+        "standardFlowEnabled": false,
+        "publicClient": false,
+        "redirectUris": ["*"]
+      },
+      {
+        "clientId": "front-ui-microservice",
+        "secret": "a",
+        "protocol": "openid-connect",
+        "serviceAccountsEnabled": true,
+        "standardFlowEnabled": false,
+        "publicClient": false,
+        "redirectUris": ["*"]
+      },
+      {
+        "clientId": "notifications-microservice",
+        "secret": "a",
+        "protocol": "openid-connect",
+        "serviceAccountsEnabled": true,
+        "standardFlowEnabled": false,
+        "publicClient": false,
+        "redirectUris": ["*"]
+      },
+      {
+        "clientId": "transfer-microservice",
+        "secret": "a",
+        "protocol": "openid-connect",
+        "serviceAccountsEnabled": true,
+        "standardFlowEnabled": false,
+        "publicClient": false,
+        "redirectUris": ["*"]
+      }
+  ]
+}

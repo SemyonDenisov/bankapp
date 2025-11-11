@@ -1,0 +1,4 @@
+apiVersion: v2
+name: exchange-generator-microservice
+version: 0.1.0
+description: Helm chart for exchange-generator-microservice

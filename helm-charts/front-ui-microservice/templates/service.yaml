@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-ui-microservice
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: front-ui-microservice
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 8089

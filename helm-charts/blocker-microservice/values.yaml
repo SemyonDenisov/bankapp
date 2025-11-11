@@ -1,0 +1,12 @@
+replicaCount: 1
+
+image:
+  repository: blocker-microservice
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 8087
+
+

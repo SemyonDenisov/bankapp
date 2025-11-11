@@ -34,12 +34,12 @@ spring:
     import: "optional:consul:"
   cloud:
     consul:
-      host: host.docker.internal
+      host: consul
       port: 8500
       config:
-        enabled: false  # Отключите consul config если используете Eureka
+        enabled: false  
       discovery:
-        enabled: false  # Отключите consul discovery
+        enabled: false  
     gateway:
       server:
         webflux:
@@ -74,6 +74,9 @@ spring:
               lower-case-service-id: true
 
 eureka:
+  instance:
+      instance-id: ${spring.application.name}:${server.port}
+      prefer-ip-address: true
   client:
     service-url:
       defaultZone: http://eureka:8761/eureka
