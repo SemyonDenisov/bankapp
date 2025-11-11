@@ -4,6 +4,10 @@ pipeline {
     environment {
         MINIKUBE_PROFILE = "minikube"
     }
+    
+    tools {
+        maven 'Maven3' // Имя Maven из Global Tool Configuration
+    }
 
     stages {
 
@@ -40,13 +44,16 @@ pipeline {
                         echo "Building service: ${svc}"
 
                         dir("bankapp/${svc}") {
-                            if (isUnix()) {
-                                sh 'mvn clean install'
-                                sh "docker build -t ${svc}:latest ."
-                            } else {
-                                bat 'mvn clean install'
-                                bat "docker build -t ${svc}:latest ."
-                            }
+                            sh """
+                                echo "Configuring Docker to use Minikube"
+                                eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)
+
+                                echo "Building Maven project"
+                                mvn clean install
+
+                                echo "Building Docker image"
+                                docker build -t ${svc}:latest .
+                            """
                         }
                     }
                 }
@@ -56,68 +63,43 @@ pipeline {
         stage('deploy infrastructure'){
             steps{
                 script{
-                    echo "start app keycloak"
+                   // Keycloak
                     dir("helm-charts/keycloak") {
-                            if (isUnix()) {
-                                sh "kubectl create configmap keycloak-realm --from-file=realm-export.json"
-                                sh "kubectl apply -f keycloak-deployment.yaml"
-                            } else {
-                                bat "kubectl create configmap keycloak-realm --from-file=realm-export.json"
-                                bat "kubectl apply -f keycloak-deployment.yaml"
-                            }
-                        }
-
-                    echo "start app postgres"
-                    dir("helm-charts/postgres") {
-                            if (isUnix()) {
-                                sh "kubectl apply -f postgres-deployment.yaml"
-                            } else {
-                                bat "kubectl apply -f postgres-deployment.yaml"
-                            }
-                        }
-
-                    echo "start app consul"
-                    dir("helm-charts/consul") {
-                            if (isUnix()) {
-                                sh "kubectl apply -f consul.yaml"
-                            } else {
-                                bat "kubectl apply -f consul.yaml"
-                            }
-                        }
-                    if (isUnix()) {
-                        sh "kubectl rollout status deployment/consul --timeout=120s || true"
-                    } else {
-                        bat "kubectl rollout status deployment/consul --timeout=120s || true"
+                        sh '''
+                            kubectl create configmap keycloak-realm --from-file=realm-export.json || true
+                            kubectl apply -f keycloak-deployment.yaml
+                        '''
                     }
 
-                    echo "load microservice configs into consul"
+                    // Postgres
+                    dir("helm-charts/postgres") {
+                        sh 'kubectl apply -f postgres-deployment.yaml'
+                    }
+
+                    // Consul
+                    dir("helm-charts/consul") {
+                        sh '''
+                            kubectl apply -f consul.yaml
+                            kubectl rollout status deployment/consul --timeout=120s || true
+                        '''
+                    }
+
+                    // Load microservice configs into Consul
                     dir("consul") {
-                        if (isUnix()) {
-                            sh '''
+                        sh '''
                             CONSUL_POD=$(kubectl get pod -l app=consul -o jsonpath="{.items[0].metadata.name}")
 
                             for file in *.yaml; do
                                 SERVICE_NAME=$(basename "$file" .yaml)
                                 echo "Uploading config for $SERVICE_NAME"
-                                kubectl exec -i $CONSUL_POD -- \
-                                consul kv put config/$SERVICE_NAME @${file}
+                                kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME @${file}
                             done
-                            '''
-                        } else {
-                            bat '''
-                            for %%f in (*.yaml) do (
-                                set "SERVICE_NAME=%%~nf"
-                                echo Uploading config for %SERVICE_NAME%
-                                for /f "usebackq tokens=*" %%p in (`kubectl get pod -l app=consul -o jsonpath="{.items[0].metadata.name}"`) do (
-                                    kubectl exec -i %%p -- consul kv put config/%SERVICE_NAME% @%%f
-                                )
-                            )
-                            '''
-                        }
+                        '''
+                    }
                     }
                 }
             }
-        }
+        
 
         stage('Deploy via Helm') {
             steps {
