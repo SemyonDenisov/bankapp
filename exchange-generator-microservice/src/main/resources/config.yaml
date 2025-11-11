@@ -18,6 +18,7 @@ spring:
     name: exchange-generator-microservice
   jackson:
     property-naming-strategy: SNAKE_CASE
+
 logging:
   level:
     org:
