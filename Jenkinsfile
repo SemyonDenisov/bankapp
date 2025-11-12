@@ -124,7 +124,7 @@ pipeline {
                                 for file in *.yaml; do
                                     SERVICE_NAME=$(basename "$file" .yaml)
                                     echo "Uploading config for $SERVICE_NAME"
-                                    kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME/application @${file}
+                                    kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME/data @${file}
                                 done
                             '''
                         } else {
@@ -134,7 +134,7 @@ pipeline {
                                 Get-ChildItem *.yaml | ForEach-Object {
                                     $SERVICE_NAME = $_.BaseName
                                     Write-Host "Uploading config for $SERVICE_NAME"
-                                    Get-Content $_.FullName | kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME/application -
+                                    Get-Content $_.FullName | kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME/data -
                                 }
                             '''
                         }
