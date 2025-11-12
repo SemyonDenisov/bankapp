@@ -36,57 +36,91 @@ pipeline {
             }
         }
 
-        stage('Build & Docker') {
-            steps {
-                script {
-                    def services = env.SERVICES.split(',')
+     stage('Build & Docker') {
+    steps {
+        script {
+            def services = env.SERVICES.split(',')
 
-                    services.each { svc ->
-                        echo "Building service: ${svc}"
+            services.each { svc ->
+                echo "Building service: ${svc}"
 
-                        dir("bankapp/${svc}") {
-                            sh """
-                                echo "Configuring Docker to use Minikube"
-                                eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)
+                dir("bankapp/${svc}") {
+                    if (isUnix()) {
+                        // Linux / macOS
+                        sh """
+                            echo "Configuring Docker to use Minikube"
+                            eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)
 
-                                echo "Building Maven project"
-                                mvn clean install
+                            echo "Building Maven project"
+                            mvn clean install
 
-                                echo "Building Docker image"
-                                docker build -t ${svc}:latest .
-                            """
+                            echo "Building Docker image"
+                            docker build -t ${svc}:latest .
+                        """
+                    } else {
+                        // Windows
+                        powershell """
+                            Write-Host 'Configuring Docker to use Minikube'
+                            minikube -p ${env.MINIKUBE_PROFILE} docker-env --shell powershell | Invoke-Expression
+
+                            Write-Host 'Building Maven project'
+                            mvn clean install
+
+                            Write-Host 'Building Docker image'
+                            docker build -t ${svc}:latest .
+                        """
                         }
                     }
                 }
             }
         }
+    }
 
-        stage('deploy infrastructure'){
-            steps{
-                script{
-                   // Keycloak
-                    dir("helm-charts/keycloak") {
+    stage('deploy infrastructure') {
+        steps {
+            script {
+                // Keycloak
+                dir("helm-charts/keycloak") {
+                    if (isUnix()) {
                         sh '''
                             kubectl create configmap keycloak-realm --from-file=realm-export.json || true
                             kubectl apply -f keycloak-deployment.yaml
                         '''
+                    } else {
+                        powershell '''
+                            kubectl create configmap keycloak-realm --from-file=realm-export.json -o yaml --dry-run=client | kubectl apply -f -
+                            kubectl apply -f keycloak-deployment.yaml
+                        '''
                     }
+                }
 
-                    // Postgres
-                    dir("helm-charts/postgres") {
+                // Postgres
+                dir("helm-charts/postgres") {
+                    if (isUnix()) {
                         sh 'kubectl apply -f postgres-deployment.yaml'
+                    } else {
+                        powershell 'kubectl apply -f postgres-deployment.yaml'
                     }
+                }
 
-                    // Consul
-                    dir("helm-charts/consul") {
+                // Consul
+                dir("helm-charts/consul") {
+                    if (isUnix()) {
                         sh '''
                             kubectl apply -f consul.yaml
                             kubectl rollout status deployment/consul --timeout=120s || true
                         '''
+                    } else {
+                        powershell '''
+                            kubectl apply -f consul.yaml
+                            kubectl rollout status deployment/consul --timeout=120s
+                        '''
                     }
+                }
 
-                    // Load microservice configs into Consul
-                    dir("consul") {
+                // Load microservice configs into Consul
+                dir("consul") {
+                    if (isUnix()) {
                         sh '''
                             CONSUL_POD=$(kubectl get pod -l app=consul -o jsonpath="{.items[0].metadata.name}")
 
@@ -96,32 +130,21 @@ pipeline {
                                 kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME @${file}
                             done
                         '''
-                    }
-                    }
-                }
-            }
-        
-
-        stage('Deploy via Helm') {
-            steps {
-                script {
-                    def services = env.SERVICES.split(',')
-
-                    services.each { svc ->
-                        echo "Deploying service via Helm: ${svc}"
-
-                        dir("helm-charts/${svc}") {
-                            if (isUnix()) {
-                                sh "helm upgrade --install ${svc} ."
-                            } else {
-                                bat "helm upgrade --install ${svc} ."
+                    } else {
+                        powershell '''
+                            $CONSUL_POD = kubectl get pod -l app=consul -o jsonpath="{.items[0].metadata.name}"
+                            Get-ChildItem *.yaml | ForEach-Object {
+                                $SERVICE_NAME = $_.BaseName
+                                Write-Host "Uploading config for $SERVICE_NAME"
+                                kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME @($_.FullName)
                             }
-                        }
+                        '''
                     }
                 }
             }
         }
     }
+
 
     post {
         always {
