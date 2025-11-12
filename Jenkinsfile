@@ -134,7 +134,7 @@ pipeline {
                                 Get-ChildItem *.yaml | ForEach-Object {
                                     $SERVICE_NAME = $_.BaseName
                                     Write-Host "Uploading config for $SERVICE_NAME"
-                                    Get-Content $_.FullName | kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME//application -
+                                    Get-Content $_.FullName | kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME/application -
                                 }
                             '''
                         }
