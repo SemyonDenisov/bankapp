@@ -74,13 +74,7 @@
         console.log('Token:', token);
 
         try {
-            const response = await fetch('http://localhost:8083/old-notifications', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetch('http://localhost:8089/old-notifications');
 
             if (!response.ok) {
                 throw new Error('Ошибка HTTP: ' + response.status);

@@ -2,7 +2,9 @@ package ru.yandex.front.ui.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -15,10 +17,7 @@ import ru.yandex.front.ui.model.Account;
 import ru.yandex.front.ui.model.Currency;
 import ru.yandex.front.ui.model.CurrencyQuotation;
 import ru.yandex.front.ui.model.RegistrationForm;
-import ru.yandex.front.ui.service.AccountService;
-import ru.yandex.front.ui.service.ClientCredentialService;
-import ru.yandex.front.ui.service.ExchangeService;
-import ru.yandex.front.ui.service.TransferService;
+import ru.yandex.front.ui.service.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +35,8 @@ public class FrontController {
     ClientCredentialService clientCredentialService;
 
     ExchangeService exchangeService;
+
+    NotificationsService notificationsService;
 
     public FrontController(TransferService transferService,
                            AccountService accountService,
@@ -109,6 +110,12 @@ public class FrontController {
     @GetMapping("/rates")
     public ResponseEntity<List<CurrencyQuotation>> getRates() {
         return ResponseEntity.ok(exchangeService.getRates());
+    }
+
+
+    @GetMapping("/old-notifications")
+    public ResponseEntity<List<String>> getNotifications() {
+        return ResponseEntity.ok(notificationsService.getNotifications());
     }
 
 
