@@ -26,7 +26,7 @@ pipeline {
         stage('Detect Services') {
              steps { 
                 script { 
-                    def microservices = ["api-gateway","eureka","notifications-microservice"]//,"blocker-microservice","accounts-microservice","exchange-microservice","transfer-microservice","cash-microservice","exchange-generator-microservice","front-ui-microservice"] 
+                    def microservices = ["api-gateway","eureka","notifications-microservice""accounts-microservice","blocker-microservice"//],"exchange-microservice","transfer-microservice","cash-microservice","exchange-generator-microservice","front-ui-microservice"] 
                     def extraServices = ['eureka', 'api-gateway'] 
                     env.SERVICES = (microservices + extraServices).join(',') 
                         } 
