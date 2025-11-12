@@ -4,10 +4,7 @@ pipeline {
     environment {
         MINIKUBE_PROFILE = "minikube"
     }
-    
-    tools {
-        maven 'Maven3' // Имя Maven из Global Tool Configuration
-    }
+
 
     stages {
 
