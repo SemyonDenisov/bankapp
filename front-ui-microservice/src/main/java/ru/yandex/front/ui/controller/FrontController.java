@@ -40,11 +40,14 @@ public class FrontController {
 
     public FrontController(TransferService transferService,
                            AccountService accountService,
-                           ClientCredentialService clientCredentialService, ExchangeService exchangeService) {
+                           ClientCredentialService clientCredentialService,
+                           ExchangeService exchangeService,
+                           NotificationsService notificationsService) {
         this.transferService = transferService;
         this.accountService = accountService;
         this.clientCredentialService = clientCredentialService;
         this.exchangeService = exchangeService;
+        this.notificationsService = notificationsService;
     }
 
     @GetMapping("/")
