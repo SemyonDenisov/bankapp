@@ -43,7 +43,7 @@ pipeline {
                     services.each { svc ->
                         echo "Building service: ${svc}"
 
-                        dir("bankapp/${svc}") {
+                        dir("${svc}") {
                             if (isUnix()) {
                                 sh """
                                     echo "Configuring Docker to use Minikube"
