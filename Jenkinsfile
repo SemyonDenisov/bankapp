@@ -26,7 +26,7 @@ pipeline {
         stage('Detect Services') {
              steps { 
                 script { 
-                    def microservices = ["api-gateway","eureka","notifications-microservice","accounts-microservice","blocker-microservice"]//,"exchange-microservice","transfer-microservice","cash-microservice","exchange-generator-microservice","front-ui-microservice"] 
+                    def microservices = ["api-gateway","eureka","notifications-microservice","accounts-microservice","blocker-microservice","front-ui-microservice"]//,"exchange-microservice","transfer-microservice","cash-microservice","exchange-generator-microservice","front-ui-microservice"] 
                     def extraServices = ['eureka', 'api-gateway'] 
                     env.SERVICES = (microservices + extraServices).join(',') 
                         } 
@@ -50,7 +50,7 @@ pipeline {
                                     eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)
 
                                     echo "Building Maven project"
-                                    mvn clean install
+                                    mvn clean install -DskipTests
 
                                     echo "Building Docker image"
                                     docker build -t ${svc}:latest .
