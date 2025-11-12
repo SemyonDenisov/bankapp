@@ -116,7 +116,7 @@ pipeline {
                     }
 
                     // Load microservice configs into Consul
-                    dir("consul") {
+                   dir("consul") {
                         if (isUnix()) {
                             sh '''
                                 CONSUL_POD=$(kubectl get pod -l app=consul -o jsonpath="{.items[0].metadata.name}")
@@ -130,14 +130,16 @@ pipeline {
                         } else {
                             powershell '''
                                 $CONSUL_POD = kubectl get pod -l app=consul -o jsonpath="{.items[0].metadata.name}"
+
                                 Get-ChildItem *.yaml | ForEach-Object {
                                     $SERVICE_NAME = $_.BaseName
                                     Write-Host "Uploading config for $SERVICE_NAME"
-                                    kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME @($_.FullName)
+                                    Get-Content $_.FullName | kubectl exec -i $CONSUL_POD -- consul kv put config/$SERVICE_NAME -
                                 }
                             '''
                         }
                     }
+
                 }
             }
         }
