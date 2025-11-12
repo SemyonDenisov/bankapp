@@ -19,6 +19,12 @@ public class NotificationsService {
     CircuitBreaker circuitBreaker;
     Retry retry;
 
+    public NotificationsService(ClientCredentialService clientCredentialService, RestTemplate restTemplate) {
+        this.clientCredentialService = clientCredentialService;
+        this.restTemplate = restTemplate;
+        circuitBreaker = CircuitBreaker.ofDefaults("exchange-microservice");
+        retry = Retry.ofDefaults("exchange-microservice");
+    }
 
     public List<String> getNotifications(){
         var token = clientCredentialService.getToken();
