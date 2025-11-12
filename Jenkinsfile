@@ -15,7 +15,8 @@ pipeline {
                     if (isUnix()) {
                         sh "eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)"
                     } else {
-                        bat "bat 'powershell -Command "minikube -p minikube docker-env --shell powershell | Invoke-Expression"'"
+                        bat 'powershell -Command "minikube -p minikube docker-env --shell powershell | Invoke-Expression"'
+
                     }
                 }
             }
