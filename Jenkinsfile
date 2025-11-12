@@ -8,20 +8,31 @@ pipeline {
     stages {
 
         stage('Setup Docker Env for Minikube') {
-    steps {
-        script {
-            echo "Configuring Docker to use Minikube's Docker daemon"
-            if (isUnix()) {
-                sh "eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)"
-            } else {
-                powershell """
-                    Write-Host "Configuring Docker to use Minikube's Docker daemon"
-                    & minikube -p ${env.MINIKUBE_PROFILE} docker-env | Invoke-Expression
-                """
+        steps {
+            script {
+                echo "Configuring Docker to use Minikube's Docker daemon"
+                if (isUnix()) {
+                    sh "eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)"
+                } else {
+                    powershell """
+                        Write-Host "Configuring Docker to use Minikube's Docker daemon"
+                        & minikube -p ${env.MINIKUBE_PROFILE} docker-env | Invoke-Expression
+                    """
+                }
             }
         }
-    }
-}
+        }
+
+        stage('Detect Services') {
+             steps { 
+                script { 
+                    def microservices = ["api-gateway","eureka","notifications-microservice"]//,"blocker-microservice","accounts-microservice","exchange-microservice","transfer-microservice","cash-microservice","exchange-generator-microservice","front-ui-microservice"] 
+                    def extraServices = ['eureka', 'api-gateway'] 
+                    env.SERVICES = (microservices + extraServices).join(',') 
+                        } 
+                }
+
+            }
 
 
         stage('Build & Docker') {
