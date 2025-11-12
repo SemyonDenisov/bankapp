@@ -68,6 +68,12 @@ spring:
                 - Path=/exchange/**
               filters:
                 - StripPrefix=1
+            - id: notifications-microservice
+              uri: lb://notifications-microservice
+              predicates:
+                - Path=/notifications/**
+              filters:
+                - StripPrefix=1
           discovery:
             locator:
               enabled: true

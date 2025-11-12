@@ -22,8 +22,8 @@ public class NotificationsService {
     public NotificationsService(ClientCredentialService clientCredentialService, RestTemplate restTemplate) {
         this.clientCredentialService = clientCredentialService;
         this.restTemplate = restTemplate;
-        circuitBreaker = CircuitBreaker.ofDefaults("exchange-microservice");
-        retry = Retry.ofDefaults("exchange-microservice");
+        circuitBreaker = CircuitBreaker.ofDefaults("notifications-microservice");
+        retry = Retry.ofDefaults("notifications-microservice");
     }
 
     public List<String> getNotifications(){
@@ -34,7 +34,7 @@ public class NotificationsService {
 
         return retry.executeSupplier(() ->
                 circuitBreaker.executeSupplier(() ->
-                        restTemplate.exchange("http://notifications-service:8083/old-notifications",
+                        restTemplate.exchange("http://api-gateway/notifications/old-notifications",
                                 HttpMethod.GET, entity,
                                 new ParameterizedTypeReference<List<String>>() {
                                 }).getBody()));
