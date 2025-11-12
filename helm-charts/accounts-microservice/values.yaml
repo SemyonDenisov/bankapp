@@ -6,9 +6,9 @@ image:
   pullPolicy: IfNotPresent
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 8081
-  nodePort: 30081
+
 
 env:
   SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
