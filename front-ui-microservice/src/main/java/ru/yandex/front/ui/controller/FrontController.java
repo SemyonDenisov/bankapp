@@ -118,7 +118,6 @@ public class FrontController {
 
     @GetMapping("/old-notifications")
     public ResponseEntity<List<String>> getNotifications() {
-        log.info("\n\n\n\n\n\n\n\n\nhere\n\n\n\n\n\n\n\n\n\n\n");
         return ResponseEntity.ok(notificationsService.getNotifications());
     }
 

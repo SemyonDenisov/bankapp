@@ -6,6 +6,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,22 +15,20 @@ import java.util.List;
 @Service
 public class NotificationsService {
 
-    ClientCredentialService clientCredentialService;
     RestTemplate restTemplate;
     CircuitBreaker circuitBreaker;
     Retry retry;
 
-    public NotificationsService(ClientCredentialService clientCredentialService, RestTemplate restTemplate) {
-        this.clientCredentialService = clientCredentialService;
+    public NotificationsService( RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         circuitBreaker = CircuitBreaker.ofDefaults("notifications-microservice");
         retry = Retry.ofDefaults("notifications-microservice");
     }
 
     public List<String> getNotifications(){
-        var token = clientCredentialService.getToken();
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
+        headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
+
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         return retry.executeSupplier(() ->
