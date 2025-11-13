@@ -159,6 +159,22 @@ pipeline {
             }
         }
 
+        stage('Start Port Forward') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh '''
+                            nohup kubectl port-forward service/front-ui-microservice 8089:8089 >/dev/null 2>&1 &
+                        '''
+                    } else {
+                        powershell '''
+                            Start-Process -NoNewWindow kubectl "port-forward service/front-ui-microservice 8089:8089" -RedirectStandardOutput "NUL" -RedirectStandardError "NUL"
+                        '''
+                    }
+                }
+            }
+        }
+
     }
 
     post {
