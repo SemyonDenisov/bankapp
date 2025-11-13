@@ -168,7 +168,7 @@ pipeline {
                         '''
                     } else {
                         powershell '''
-                            Start-Process -NoNewWindow kubectl "port-forward service/front-ui-microservice 8089:8089" -RedirectStandardOutput "NUL" -RedirectStandardError "NUL"
+                            Start-Process -NoNewWindow kubectl "port-forward service/front-ui-microservice 8089:8089"
                         '''
                     }
                 }
