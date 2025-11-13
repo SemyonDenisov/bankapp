@@ -75,7 +75,6 @@ pipeline {
         stage('Deploy Infrastructure') {
             steps {
                 script {
-                    // Keycloak
                     dir("helm-charts/keycloak") {
                         if (isUnix()) {
                             sh '''
@@ -90,7 +89,6 @@ pipeline {
                         }
                     }
 
-                    // Postgres
                     dir("helm-charts/postgres") {
                         if (isUnix()) {
                             sh 'kubectl apply -f postgres-deployment.yaml'
@@ -99,7 +97,6 @@ pipeline {
                         }
                     }
 
-                    // Consul
                     dir("helm-charts/consul") {
                         if (isUnix()) {
                             sh '''
@@ -114,7 +111,6 @@ pipeline {
                         }
                     }
 
-                    // Load microservice configs into Consul
                    dir("consul") {
                         if (isUnix()) {
                             sh '''
@@ -163,7 +159,7 @@ pipeline {
             }
         }
 
-    } // end of stages
+    }
 
     post {
         always {
@@ -171,4 +167,4 @@ pipeline {
         }
     }
 
-} // end of pipeline
+}

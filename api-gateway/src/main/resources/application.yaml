@@ -74,6 +74,12 @@ spring:
                 - Path=/notifications/**
               filters:
                 - StripPrefix=1
+            - id: front-ui-microservice
+              uri: lb://front-ui-microservice
+              predicates:
+                - Path=/front/**
+              filters:
+                - StripPrefix=1
           discovery:
             locator:
               enabled: true
