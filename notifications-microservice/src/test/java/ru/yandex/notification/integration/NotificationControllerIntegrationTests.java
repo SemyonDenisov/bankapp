@@ -21,7 +21,7 @@ import ru.yandex.notification.configuration.WebSocketConfig;
 import ru.yandex.notification.controller.NotificationsController;
 import ru.yandex.notification.security.JwtFilter;
 import ru.yandex.notification.security.SecurityConfig;
-import ru.yandex.account.service.NotificationsService;
+import ru.yandex.notification.service.NotificationsService;
 
 import java.util.List;
 
