@@ -5,6 +5,7 @@ import io.github.resilience4j.retry.Retry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.*;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,58 +22,58 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class CurrencyService {
 
-    private static final Log log = LogFactory.getLog(CurrencyService.class);
     RestTemplate restTemplate;
-    ClientCredentialService clientCredentialService;
     CircuitBreaker circuitBreaker;
     Retry retry;
+    KafkaTemplate<String, CurrencyQuotation> kafkaTemplate;
 
-    public CurrencyService(RestTemplate restTemplate, ClientCredentialService clientCredentialService) {
+    public CurrencyService(RestTemplate restTemplate,
+                           KafkaTemplate<String, CurrencyQuotation> kafkaTemplate) {
         this.restTemplate = restTemplate;
-        this.clientCredentialService = clientCredentialService;
         circuitBreaker = CircuitBreaker.ofDefaults("exchange-microservice");
         retry = Retry.ofDefaults("exchange-microservice");
+        this.kafkaTemplate = kafkaTemplate;
     }
 
-    @Scheduled(fixedRate = 1000)
-    public void generateCurrency() {
-        List<CurrencyQuotation> quotations = new ArrayList<>();
-        Arrays.stream(Currency.values())
-                .forEach(currency -> quotations.add(new CurrencyQuotation(currency, generateExchangeRate(currency))));
-
-        var token = clientCredentialService.getToken();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        HttpEntity<List<CurrencyQuotation>> entity = new HttpEntity<>(quotations, headers);
-
-
-        HttpEntity<Void> blockerEntity = new HttpEntity<>(headers);
-        boolean decision;
-
-        try {
-            decision = retry.executeSupplier(() ->
-                    circuitBreaker.executeSupplier(() ->
-                            restTemplate.exchange(
-                                    "http://blocker-microservice/block",
-                                    HttpMethod.GET,
-                                    blockerEntity,
-                                    Boolean.class
-                            ).getBody()
-                    )
-            );
-        } catch (Exception e) {
-            log.warn("block service not available", e);
-            decision = false;
-        }
-        
-        if (!decision) {
-            retry.executeSupplier(() ->
-                    circuitBreaker.executeSupplier(() -> restTemplate
-                            .postForEntity("http://exchange-microservice/update-quotations", entity, Void.class)));
-        }
-
-
-    }
+//    @Scheduled(fixedRate = 1000)
+//    public void generateCurrency() {
+//        List<CurrencyQuotation> quotations = new ArrayList<>();
+//        Arrays.stream(Currency.values())
+//                .forEach(currency -> quotations.add(new CurrencyQuotation(currency, generateExchangeRate(currency))));
+//
+//        var token = clientCredentialService.getToken();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setBearerAuth(token);
+//        HttpEntity<List<CurrencyQuotation>> entity = new HttpEntity<>(quotations, headers);
+//
+//
+//        HttpEntity<Void> blockerEntity = new HttpEntity<>(headers);
+//        boolean decision;
+//
+//        try {
+//            decision = retry.executeSupplier(() ->
+//                    circuitBreaker.executeSupplier(() ->
+//                            restTemplate.exchange(
+//                                    "http://blocker-microservice/block",
+//                                    HttpMethod.GET,
+//                                    blockerEntity,
+//                                    Boolean.class
+//                            ).getBody()
+//                    )
+//            );
+//        } catch (Exception e) {
+//            log.warn("block service not available", e);
+//            decision = false;
+//        }
+//
+//        if (!decision) {
+//            retry.executeSupplier(() ->
+//                    circuitBreaker.executeSupplier(() -> restTemplate
+//                            .postForEntity("http://exchange-microservice/update-quotations", entity, Void.class)));
+//        }
+//
+//
+//    }
 
     public double generateExchangeRate(Currency currency) {
         if (currency == Currency.USD) {
@@ -82,5 +83,51 @@ public class CurrencyService {
             return ThreadLocalRandom.current().nextDouble(90, 110);
         }
         return 1.0;
+    }
+
+    @Scheduled(fixedRate = 1000)
+    public void generateCurrency() {
+        List<CurrencyQuotation> quotations = new ArrayList<>();
+        Arrays.stream(Currency.values())
+                .forEach(currency -> quotations.add(new CurrencyQuotation(currency, generateExchangeRate(currency))));
+
+        quotations.forEach(quotation -> {
+            kafkaTemplate.send("exchange." + quotation.getCurrency(), quotation);
+        });
+
+
+
+//        var token = clientCredentialService.getToken();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setBearerAuth(token);
+//        HttpEntity<List<CurrencyQuotation>> entity = new HttpEntity<>(quotations, headers);
+//
+//
+//        HttpEntity<Void> blockerEntity = new HttpEntity<>(headers);
+//        boolean decision;
+//
+//        try {
+//            decision = retry.executeSupplier(() ->
+//                    circuitBreaker.executeSupplier(() ->
+//                            restTemplate.exchange(
+//                                    "http://blocker-microservice/block",
+//                                    HttpMethod.GET,
+//                                    blockerEntity,
+//                                    Boolean.class
+//                            ).getBody()
+//                    )
+//            );
+//        } catch (Exception e) {
+//            log.warn("block service not available", e);
+//            decision = false;
+//        }
+//
+//        if (!decision) {
+//            retry.executeSupplier(() ->
+//                    circuitBreaker.executeSupplier(() -> restTemplate
+//                            .postForEntity("http://exchange-microservice/update-quotations", entity, Void.class)));
+//        }
+
+
     }
 }
