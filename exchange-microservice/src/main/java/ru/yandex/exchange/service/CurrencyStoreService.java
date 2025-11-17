@@ -1,5 +1,7 @@
 package ru.yandex.exchange.service;
 
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 import ru.yandex.exchange.model.Currency;
 import ru.yandex.exchange.model.CurrencyQuotation;
@@ -34,5 +36,16 @@ public class CurrencyStoreService {
         List<CurrencyQuotation> quotations = new ArrayList<>();
         rates.forEach((k, v) -> quotations.add(new CurrencyQuotation(k, v)));
         return quotations;
+    }
+
+    @KafkaListener(topicPattern = "exchange.*",groupId = "exchange-group")
+    public void listen(CurrencyQuotation quotation, Acknowledgment ack) {
+        try {
+            updateRate(quotation.getCurrency(), rates.get(quotation.getCurrency()));
+            ack.acknowledge();
+        }catch (Exception e) {
+            ack.acknowledge();
+            throw new RuntimeException(e);
+        }
     }
 }
