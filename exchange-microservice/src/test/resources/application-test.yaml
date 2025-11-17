@@ -4,9 +4,18 @@ eureka:
   client:
     enabled: false
 spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  kafka:
+    listener:
+      ack-mode: manual
+    consumer:
+      group-id: exchange-group
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: ru.yandex.exchange.model.CurrencyQuotation
+        spring.json.use.type.headers: false
   security:
     oauth2:
       resourceserver:
@@ -14,8 +23,8 @@ spring:
           issuer-uri: http://localhost:8090/realms/master
       client:
         registration:
-          cash-microservice:
-            client-id: cash-microservice
+          exchange-microservice:
+            client-id: exchange-microservice
             client-secret: a
             authorization-grant-type: client_credentials
             provider: keycloak
@@ -27,7 +36,7 @@ spring:
       config:
         enabled: false
   application:
-    name: notifications-microservice
+    name: exchange-microservice
   jackson:
     property-naming-strategy: SNAKE_CASE
 logging:

@@ -1,4 +1,4 @@
-package ru.yandex.notification.integration;
+package ru.yandex.exchange.integration;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
@@ -9,9 +9,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
-import ru.yandex.notification.KafkaTestConfig;
-import ru.yandex.notification.model.Message;
-import ru.yandex.notification.service.NotificationsService;
+import ru.yandex.exchange.KafkaTestConfig;
+import ru.yandex.exchange.model.Currency;
+import ru.yandex.exchange.model.CurrencyQuotation;
+import ru.yandex.exchange.service.CurrencyStoreService;
 
 import java.time.Duration;
 
@@ -20,34 +21,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(properties = {
         "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"
 })
-@EmbeddedKafka(partitions = 1, topics = "notification.test")
+@EmbeddedKafka(partitions = 1, topics = "exchange.test")
 @Import(KafkaTestConfig.class)
 @ActiveProfiles("test")
-public class NotificationServiceIntegrationTest {
+public class CurrencyStoreServiceIntegrationTests {
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafka;
 
     @Autowired
-    private KafkaTemplate<String, Message> kafkaTemplate;
+    private KafkaTemplate<String, CurrencyQuotation> kafkaTemplate;
 
     @Autowired
-    private NotificationsService notificationService;
+    private CurrencyStoreService currencyStoreService;
 
     @Test
-    void testKafkaListener() {
-        String email = "test@example.com";
-        String text = "Hello Kafka!";
-        Message msg = new Message(email, text);
-
-        kafkaTemplate.send("notification.test", msg);
+    void testKafkaListener() throws InterruptedException {
+        CurrencyQuotation msg = new CurrencyQuotation(Currency.RUB, 2);
+        kafkaTemplate.send("exchange.test", msg);
         kafkaTemplate.flush();
 
         Awaitility.await()
                 .atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> {
-                    var messages = notificationService.getOldMessagesByEmail(email).size();
-                    assertEquals(1, messages);
+                    var rubQuotation = currencyStoreService.getQuotations().stream().filter(quotation -> quotation.getCurrency().equals(Currency.RUB)).findFirst().orElse(null);
+                    assertEquals(2, rubQuotation.getRate());
                 });
     }
 }

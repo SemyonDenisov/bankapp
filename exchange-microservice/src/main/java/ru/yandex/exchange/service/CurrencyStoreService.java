@@ -41,7 +41,7 @@ public class CurrencyStoreService {
     @KafkaListener(topicPattern = "exchange.*",groupId = "exchange-group")
     public void listen(CurrencyQuotation quotation, Acknowledgment ack) {
         try {
-            updateRate(quotation.getCurrency(), rates.get(quotation.getCurrency()));
+            updateRate(quotation.getCurrency(), quotation.getRate());
             ack.acknowledge();
         }catch (Exception e) {
             ack.acknowledge();
