@@ -1,4 +1,4 @@
-package ru.yandex.account.controller;
+package ru.yandex.notification.controller;
 
 
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.account.service.NotificationsService;
+import ru.yandex.notification.service.NotificationsService;
 
 import java.util.List;
 

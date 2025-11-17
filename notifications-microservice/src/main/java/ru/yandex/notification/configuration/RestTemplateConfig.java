@@ -1,4 +1,4 @@
-package ru.yandex.account.configuration;
+package ru.yandex.notification.configuration;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

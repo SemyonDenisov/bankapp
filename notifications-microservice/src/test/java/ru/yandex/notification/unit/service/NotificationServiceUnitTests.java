@@ -1,4 +1,4 @@
-package ru.yandex.account.unit.service;
+package ru.yandex.notification.unit.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

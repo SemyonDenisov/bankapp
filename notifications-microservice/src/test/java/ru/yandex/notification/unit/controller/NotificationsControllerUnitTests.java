@@ -1,4 +1,4 @@
-package ru.yandex.account.unit.controller;
+package ru.yandex.notification.unit.controller;
 
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
@@ -16,11 +16,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.yandex.account.TestSecurityConfig;
-import ru.yandex.account.controller.NotificationsController;
+import ru.yandex.notification.TestSecurityConfig;
+import ru.yandex.notification.controller.NotificationsController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import ru.yandex.account.security.JwtFilter;
-import ru.yandex.account.security.SecurityConfig;
+import ru.yandex.notification.security.JwtFilter;
+import ru.yandex.notification.security.SecurityConfig;
 import ru.yandex.account.service.NotificationsService;
 import org.junit.jupiter.api.BeforeEach;
 

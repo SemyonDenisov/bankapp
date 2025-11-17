@@ -1,4 +1,4 @@
-package ru.yandex.account.security;
+package ru.yandex.notification.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

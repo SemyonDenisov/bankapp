@@ -1,4 +1,4 @@
-package ru.yandex.account.model;
+package ru.yandex.notification.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

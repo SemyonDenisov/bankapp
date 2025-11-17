@@ -1,4 +1,4 @@
-package ru.yandex.account;
+package ru.yandex.notification;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

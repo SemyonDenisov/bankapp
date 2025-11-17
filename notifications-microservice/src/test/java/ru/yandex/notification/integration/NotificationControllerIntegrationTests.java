@@ -1,13 +1,10 @@
-package ru.yandex.account.integration;
+package ru.yandex.notification.integration;
 
-import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
@@ -19,11 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.yandex.account.TestSecurityConfig;
-import ru.yandex.account.configuration.WebSocketConfig;
-import ru.yandex.account.controller.NotificationsController;
-import ru.yandex.account.security.JwtFilter;
-import ru.yandex.account.security.SecurityConfig;
+import ru.yandex.notification.TestSecurityConfig;
+import ru.yandex.notification.configuration.WebSocketConfig;
+import ru.yandex.notification.controller.NotificationsController;
+import ru.yandex.notification.security.JwtFilter;
+import ru.yandex.notification.security.SecurityConfig;
 import ru.yandex.account.service.NotificationsService;
 
 import java.util.List;
