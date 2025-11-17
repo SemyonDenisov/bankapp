@@ -21,7 +21,7 @@ import ru.yandex.notification.controller.NotificationsController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import ru.yandex.notification.security.JwtFilter;
 import ru.yandex.notification.security.SecurityConfig;
-import ru.yandex.account.service.NotificationsService;
+import ru.yandex.notification.service.NotificationsService;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;

@@ -4,6 +4,17 @@ eureka:
   client:
     enabled: false
 spring:
+  kafka:
+    consumer:
+      group-id: notification-group
+      enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: ru.yandex.notification.model.Message
+        spring.json.use.type.headers: false
+      auto-offset-reset: earliest
   security:
     oauth2:
       resourceserver:
