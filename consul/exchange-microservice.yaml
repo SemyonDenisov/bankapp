@@ -12,6 +12,19 @@ eureka:
     status-page-url: actuator/info
     health-check-url: actuator/health
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    listener:
+      ack-mode: manual_immediate
+    consumer:
+        group-id: exchange-group
+        enable-auto-commit: false
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties: 
+          spring.json.trusted.packages: "*"   
+          spring.json.value.default.type: ru.yandex.exchange.model.CurrencyQuotation  
+          spring.json.use.type.headers: false
   security:
     oauth2:
       resourceserver:
