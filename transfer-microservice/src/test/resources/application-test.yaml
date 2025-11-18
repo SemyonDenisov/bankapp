@@ -4,6 +4,10 @@ eureka:
   client:
     enabled: false
 spring:
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   main:
     allow-bean-definition-overriding: true
   autoconfigure:
@@ -29,7 +33,7 @@ spring:
       config:
         enabled: false
   application:
-    name: notifications-microservice
+    name: transfer-microservice
   jackson:
     property-naming-strategy: SNAKE_CASE
 logging:

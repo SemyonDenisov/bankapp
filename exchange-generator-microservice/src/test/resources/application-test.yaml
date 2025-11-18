@@ -1,42 +1,46 @@
-  server:
-    port: 8084
-  eureka:
-    client:
+server:
+  port: 8084
+eureka:
+  client:
+    enabled: false
+spring:
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  task:
+    scheduling:
       enabled: false
-  spring:
-    task:
-      scheduling:
+  main:
+    allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8090/realms/master
+      client:
+        registration:
+          cash-microservice:
+            client-id: cash-microservice
+            client-secret: a
+            authorization-grant-type: client_credentials
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: http://localhost:8090/realms/master/protocol/openid-connect/token
+  cloud:
+    consul:
+      config:
         enabled: false
-    main:
-      allow-bean-definition-overriding: true
-    autoconfigure:
-      exclude:
-        - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-    security:
-      oauth2:
-        resourceserver:
-          jwt:
-            issuer-uri: http://localhost:8090/realms/master
-        client:
-          registration:
-            cash-microservice:
-              client-id: cash-microservice
-              client-secret: a
-              authorization-grant-type: client_credentials
-              provider: keycloak
-          provider:
-            keycloak:
-              token-uri: http://localhost:8090/realms/master/protocol/openid-connect/token
-    cloud:
-      consul:
-        config:
-          enabled: false
-    application:
-      name: notifications-microservice
-    jackson:
-      property-naming-strategy: SNAKE_CASE
-  logging:
-    level:
-      org:
-        springframework:
-          security: DEBUG
+  application:
+    name: exchange-generator-microservice
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

@@ -1,5 +1,6 @@
 package ru.yandex.transfer.unit.service;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -8,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.*;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +33,7 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @Import(TestSecurityConfig.class)
+@EmbeddedKafka(partitions = 1, topics = {"notification.accounts-microservice"})
 public class TransferServiceUnitTests {
 
     @MockitoBean
@@ -40,6 +44,11 @@ public class TransferServiceUnitTests {
 
     @Autowired
     private TransferService transferService;
+
+    @BeforeAll
+    static void init(@Autowired EmbeddedKafkaBroker broker) {
+        System.setProperty("spring.kafka.bootstrap-servers", broker.getBrokersAsString());
+    }
 
     @BeforeEach
     public void setUp() {

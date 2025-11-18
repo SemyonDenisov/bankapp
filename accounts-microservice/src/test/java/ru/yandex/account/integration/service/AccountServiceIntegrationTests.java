@@ -1,10 +1,15 @@
 package ru.yandex.account.integration.service;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.account.BaseTest;
+import ru.yandex.account.KafkaTestConfig;
 import ru.yandex.account.dao.AccountRepository;
 import ru.yandex.account.dao.UserRepository;
 import ru.yandex.account.model.Currency;
@@ -16,8 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-@SpringBootTest
+
 @ActiveProfiles("test")
+@EmbeddedKafka(partitions = 1, topics = {"notification.accounts-microservice"})
 public class AccountServiceIntegrationTests extends BaseTest {
 
     @Autowired
@@ -30,6 +36,10 @@ public class AccountServiceIntegrationTests extends BaseTest {
     private AccountService accountService;
 
 
+    @BeforeAll
+    static void init(@Autowired EmbeddedKafkaBroker broker) {
+        System.setProperty("spring.kafka.bootstrap-servers", broker.getBrokersAsString());
+    }
     @Test
     void getAccountsByEmail_shouldReturnAllCurrenciesWithCorrectFlags() {
 

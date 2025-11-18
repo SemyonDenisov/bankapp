@@ -1,10 +1,14 @@
 package ru.yandex.exchange.generator.contract;
 
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.contract.stubrunner.spring.AutoConfigureStubRunner;
 import org.springframework.cloud.contract.stubrunner.spring.StubRunnerProperties;
 import org.springframework.http.*;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,9 +25,15 @@ import static org.junit.jupiter.api.Assertions.*;
         stubsMode = StubRunnerProperties.StubsMode.LOCAL
 )
 @ActiveProfiles("test")
+@EmbeddedKafka(partitions = 1, topics = {"exchange.RUB"})
 public class ExchangeContractsTests extends BaseContractProviderTest {
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @BeforeAll
+    static void init(@Autowired EmbeddedKafkaBroker broker) {
+        System.setProperty("spring.kafka.bootstrap-servers", broker.getBrokersAsString());
+    }
 
     @Test
     void shouldReturnCurrencyRates() {
