@@ -15,7 +15,7 @@ spring:
   kafka:
     bootstrap-servers: kafka.default.svc.cluster.local:9092
     consumer:
-        group-id: notification-group
+        group-id: notification-service
         enable-auto-commit: true
         key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
