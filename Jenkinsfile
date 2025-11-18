@@ -7,7 +7,21 @@ pipeline {
 
     stages {
 
-
+        stage('Setup Docker Env for Minikube') {
+        steps {
+            script {
+                echo "Configuring Docker to use Minikube's Docker daemon"
+                if (isUnix()) {
+                    sh "eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)"
+                } else {
+                    powershell """
+                        Write-Host "Configuring Docker to use Minikube's Docker daemon"
+                        & minikube -p ${env.MINIKUBE_PROFILE} docker-env | Invoke-Expression
+                    """
+                }
+            }
+        }
+        }
 
         stage('Detect Services') {
              steps { 
