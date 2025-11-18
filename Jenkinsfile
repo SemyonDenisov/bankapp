@@ -31,7 +31,27 @@ pipeline {
                     } 
                 }
 
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    def services = env.SERVICES.split(',')
+
+                    services.each { svc ->
+                        echo "Running tests for: ${svc}"
+
+                        dir("${svc}") {
+                            if (isUnix()) {
+                                sh "mvn clean test -Ptest"
+                            } else {
+                                powershell "mvn clean test -Ptest"
+                            }
+                        }
+                    }
+                }
             }
+        }
 
 
         stage('Build & Docker') {
@@ -49,7 +69,7 @@ pipeline {
                                     eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)
 
                                     echo "Building Maven project"
-                                    mvn clean install 
+                                    mvn clean install -DskipTests
 
                                     echo "Building Docker image"
                                     docker build -t ${svc}:latest .
@@ -60,7 +80,7 @@ pipeline {
                                     minikube -p ${env.MINIKUBE_PROFILE} docker-env --shell powershell | Invoke-Expression
 
                                     Write-Host 'Building Maven project'
-                                    mvn clean install
+                                    mvn clean install -DskipTests
 
                                     Write-Host 'Building Docker image'
                                     docker build -t ${svc}:latest .
