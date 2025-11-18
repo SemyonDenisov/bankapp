@@ -16,7 +16,7 @@ pipeline {
                 } else {
                     powershell """
                         Write-Host "Configuring Docker to use Minikube's Docker daemon"
-                        & minikube -p ${env.MINIKUBE_PROFILE} docker-env | Invoke-Expression
+                        & minikube -p ${env.MINIKUBE_PROFILE} docker-env --shell powershell | Invoke-Expression
                     """
                 }
             }
