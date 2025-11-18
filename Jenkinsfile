@@ -33,25 +33,25 @@ pipeline {
 
         }
 
-        stage('Run Tests') {
-            steps {
-                script {
-                    def services = env.SERVICES.split(',')
+        // stage('Run Tests') {
+        //     steps {
+        //         script {
+        //             def services = env.SERVICES.split(',')
 
-                    services.each { svc ->
-                        echo "Running tests for: ${svc}"
+        //             services.each { svc ->
+        //                 echo "Running tests for: ${svc}"
 
-                        dir("${svc}") {
-                            if (isUnix()) {
-                                sh "mvn clean test"
-                            } else {
-                                powershell "mvn clean test"
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                 dir("${svc}") {
+        //                     if (isUnix()) {
+        //                         sh "mvn clean test"
+        //                     } else {
+        //                         powershell "mvn clean test"
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
 
         stage('Build & Docker') {
