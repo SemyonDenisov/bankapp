@@ -63,7 +63,7 @@ pipeline {
                                 powershell """
                                     Write-Host 'Configuring Docker to use Minikube'
 
-                                    cmd /c "FOR /F 'tokens=*' %i IN ('minikube -p minikube docker-env --shell cmd') DO %i"
+                                    minikube -p minikube docker-env --shell powershell | Invoke-Expression
 
 
                                     Write-Host 'Building Maven project'
