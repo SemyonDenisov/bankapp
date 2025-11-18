@@ -9,21 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.yandex.account.BaseTest;
-import ru.yandex.account.TestConfig;
 import ru.yandex.account.dao.UserRepository;
 import ru.yandex.account.model.RegistrationForm;
 import ru.yandex.account.model.User;
 import ru.yandex.account.service.UserService;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")

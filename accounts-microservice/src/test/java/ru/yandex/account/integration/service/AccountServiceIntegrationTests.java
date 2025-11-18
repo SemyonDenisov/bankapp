@@ -1,26 +1,19 @@
 package ru.yandex.account.integration.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.account.BaseTest;
 import ru.yandex.account.dao.AccountRepository;
 import ru.yandex.account.dao.UserRepository;
 import ru.yandex.account.model.Currency;
-import ru.yandex.account.model.User;
 import ru.yandex.account.service.AccountService;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
 
 
 @SpringBootTest
