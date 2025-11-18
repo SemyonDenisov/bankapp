@@ -15,6 +15,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import ru.yandex.account.KafkaTestConfig;
 import ru.yandex.account.model.Notification;
 import ru.yandex.account.model.User;
@@ -25,10 +26,13 @@ import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
+@SpringBootTest
 @EmbeddedKafka(partitions = 1, topics = {"notification.accounts-microservice"})
 @ActiveProfiles("test")
 @Import(KafkaTestConfig.class)
+@TestPropertySource(properties = {
+        "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}"
+})
 class NotificationServiceIntegrationTests {
 
     @Autowired

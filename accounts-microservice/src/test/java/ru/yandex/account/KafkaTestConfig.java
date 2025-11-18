@@ -2,6 +2,7 @@ package ru.yandex.account;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class KafkaTestConfig {
 
     @Bean
+    @Primary
     public ProducerFactory<String, Notification> testProducerFactory(EmbeddedKafkaBroker embeddedKafkaBroker) {
         Map<String, Object> props = KafkaTestUtils.producerProps(embeddedKafkaBroker);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -23,6 +25,7 @@ public class KafkaTestConfig {
     }
 
     @Bean
+    @Primary
     public KafkaTemplate<String, Notification> testKafkaTemplate(ProducerFactory<String, Notification> pf) {
         return new KafkaTemplate<>(pf);
     }
