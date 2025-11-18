@@ -43,9 +43,9 @@ pipeline {
 
                         dir("${svc}") {
                             if (isUnix()) {
-                                sh "mvn clean test -Ptest"
+                                sh "mvn clean test"
                             } else {
-                                powershell "mvn clean test -Ptest"
+                                powershell "mvn clean test"
                             }
                         }
                     }
