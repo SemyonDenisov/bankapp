@@ -44,10 +44,12 @@ public class CurrencyStoreServiceIntegrationTests {
 
     @Test
     void testKafkaListener() throws InterruptedException {
+        Thread.sleep(1000);
         CurrencyQuotation msg = new CurrencyQuotation(Currency.RUB, 2);
         kafkaTemplate.send("exchange.test", msg);
         kafkaTemplate.flush();
 
+        Thread.sleep(1000);
         Awaitility.await()
                 .atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> {
