@@ -12,32 +12,32 @@ pipeline {
         stage('Detect Services') {
              steps { 
                 script { 
-                    def microservices = ["api-gateway","eureka","accounts-microservice","blocker-microservice","exchange-microservice","exchange-generator-microservice","notifications-microservice","front-ui-microservice"] 
+                    def microservices = ["api-gateway","eureka","accounts-microservice","blocker-microservice","exchange-microservice","exchange-generator-microservice","notifications-microservice","transfer-microservice","cash-microservice","front-ui-microservice"] 
                     env.SERVICES = (microservices).join(',') 
                     } 
                 }
 
         }
 
-        // stage('Run Tests') {
-        //     steps {
-        //         script {
-        //             def services = env.SERVICES.split(',')
+        stage('Run Tests') {
+            steps {
+                script {
+                    def services = env.SERVICES.split(',')
 
-        //             services.each { svc ->
-        //                 echo "Running tests for: ${svc}"
+                    services.each { svc ->
+                        echo "Running tests for: ${svc}"
 
-        //                 dir("${svc}") {
-        //                     if (isUnix()) {
-        //                         sh "mvn clean test"
-        //                     } else {
-        //                         powershell "mvn clean test"
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                        dir("${svc}") {
+                            if (isUnix()) {
+                                sh "mvn clean test"
+                            } else {
+                                powershell "mvn clean test"
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
 
         stage('Build & Docker') {
