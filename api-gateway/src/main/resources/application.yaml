@@ -34,7 +34,7 @@ spring:
     import: "optional:consul:"
   cloud:
     consul:
-      host: consul
+      host: localhost
       port: 8500
       config:
         enabled: false  
@@ -91,6 +91,6 @@ eureka:
       prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://eureka:8761/eureka
+      defaultZone: http://localhost :8761/eureka
     register-with-eureka: true
     fetch-registry: true

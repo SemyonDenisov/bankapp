@@ -198,10 +198,12 @@ pipeline {
                 script {
                     if (isUnix()) {
                         sh '''
+                            kubectl rollout status deployment/front-ui-microservice --timeout=180s
                             nohup kubectl port-forward service/front-ui-microservice 8089:8089 >/dev/null 2>&1 &
                         '''
                     } else {
                         powershell '''
+                            kubectl rollout status deployment/front-ui-microservice --timeout=180s
                             Start-Process -NoNewWindow kubectl "port-forward service/front-ui-microservice 8089:8089"
                         '''
                     }
