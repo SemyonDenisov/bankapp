@@ -111,6 +111,20 @@ pipeline {
                         }
                     }
 
+                    dir("helm-charts/kafka") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying Kafka via Helm chart"
+                                helm upgrade --install kafka .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying Kafka via Helm chart"
+                                helm upgrade --install kafka .
+                            '''
+                        }
+                    }
+
                    dir("consul") {
                         if (isUnix()) {
                             sh '''
