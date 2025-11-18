@@ -1,6 +1,7 @@
 package ru.yandex.exchange.integration;
 
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +35,12 @@ public class CurrencyStoreServiceIntegrationTests {
 
     @Autowired
     private CurrencyStoreService currencyStoreService;
+
+    @BeforeAll
+    static void init(@Autowired EmbeddedKafkaBroker broker) {
+        System.setProperty("spring.kafka.bootstrap-servers", broker.getBrokersAsString());
+    }
+
 
     @Test
     void testKafkaListener() throws InterruptedException {
