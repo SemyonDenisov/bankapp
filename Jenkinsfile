@@ -62,7 +62,9 @@ pipeline {
                             } else {
                                 powershell """
                                     Write-Host 'Configuring Docker to use Minikube'
-                                    & minikube -p ${env.MINIKUBE_PROFILE} docker-env --shell powershell | Invoke-Expression
+
+                                    cmd /c "FOR /F 'tokens=*' %i IN ('minikube -p minikube docker-env --shell cmd') DO %i"
+
 
                                     Write-Host 'Building Maven project'
                                     mvn clean install -DskipTests
