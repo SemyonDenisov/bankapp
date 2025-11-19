@@ -62,7 +62,7 @@ pipeline {
                                     & minikube -p ${env.MINIKUBE_PROFILE} docker-env --shell powershell | Invoke-Expression
 
                                     Write-Host 'Building Maven project'
-                                    mvn clean install -DskipTests
+                                    mvn clean install 
 
                                     Write-Host 'Building Docker image'
                                     docker build -t ${svc}:latest .
