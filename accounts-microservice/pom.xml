@@ -178,6 +178,17 @@
             <artifactId>brave-instrumentation-kafka-clients</artifactId>
             <version>6.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave-instrumentation-p6spy</artifactId>
+            <version>5.18.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>p6spy</groupId>
+            <artifactId>p6spy</artifactId>
+            <version>3.9.1</version>
+        </dependency>
 
     </dependencies>
 
