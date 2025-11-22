@@ -1,6 +1,7 @@
 package ru.yandex.front.ui.controller;
 
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,16 +39,20 @@ public class FrontController {
 
     NotificationsService notificationsService;
 
+    MeterRegistry meterRegistry;
+
     public FrontController(TransferService transferService,
                            AccountService accountService,
                            ClientCredentialService clientCredentialService,
                            ExchangeService exchangeService,
-                           NotificationsService notificationsService) {
+                           NotificationsService notificationsService,
+                           MeterRegistry meterRegistry) {
         this.transferService = transferService;
         this.accountService = accountService;
         this.clientCredentialService = clientCredentialService;
         this.exchangeService = exchangeService;
         this.notificationsService = notificationsService;
+        this.meterRegistry = meterRegistry;
     }
 
     @GetMapping("/")
@@ -118,7 +123,13 @@ public class FrontController {
 
     @GetMapping("/old-notifications")
     public ResponseEntity<List<String>> getNotifications() {
-        return ResponseEntity.ok(notificationsService.getNotifications());
+        try {
+            return ResponseEntity.ok(notificationsService.getNotifications());
+        } catch (Exception e) {
+            var email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+            meterRegistry.counter("fail_notifications", "user", email).increment();
+        }
+        return ResponseEntity.ok(List.of());
     }
 
 

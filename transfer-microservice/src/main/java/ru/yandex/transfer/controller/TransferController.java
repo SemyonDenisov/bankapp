@@ -24,12 +24,10 @@ public class TransferController {
 
     @PostMapping("/transfer")
     public ResponseEntity<Object> transfer(@RequestBody ru.yandex.front.ui.model.TransferRequest transferRequest) {
-        log.info("\n{}\n", transferRequest);
         if (transferService.transfer(transferRequest)) {
             notificationService.sendNotification("transfer-service: transfer success");
             return ResponseEntity.ok().build();
         }
-        log.info("\nerrrrrrrrrrrror\n");
         notificationService.sendNotification("transfer-service: transfer error");
         return ResponseEntity.badRequest().build();
     }

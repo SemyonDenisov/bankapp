@@ -81,7 +81,7 @@ public class UserController {
                            @RequestParam(name = "to_login", defaultValue = "") String login,
                            RedirectAttributes redirectAttributes) {
 
-        log.info("\n\n\n{}\n\n\n", login);
+
         if (login != null && !login.isEmpty()) {
             transferService.transferToAnother(currencyFrom, currencyTo, value, login);
         } else {
