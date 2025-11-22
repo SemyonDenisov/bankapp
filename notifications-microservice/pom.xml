@@ -115,7 +115,13 @@
 			<artifactId>brave-instrumentation-kafka-clients</artifactId>
 			<version>6.3.0</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.16.0</version>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 		<plugins>

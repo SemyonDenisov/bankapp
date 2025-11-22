@@ -1,0 +1,20 @@
+groups:
+  - name: currency-alerts
+    rules:
+      - alert: CurrencyRatesNotUpdatedPending
+        expr: exchange_rates_up == 0.0
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Отсутствие обновления курсов валют (Pending)"
+          description: "Метрика exchange_rates_up равна 0 в течение 10 секунд. Последние курсы не обновлялись."
+
+      - alert: CurrencyRatesNotUpdatedFiring
+        expr: exchange_rates_up == 0.0
+        for: 20s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Отсутствие обновления курсов валют (Firing)"
+          description: "Метрика exchange_rates_up равна 0 в течение 20 секунд. Последние курсы не обновлялись."

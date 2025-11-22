@@ -1,0 +1,44 @@
+{
+    "id": null,
+    "title": "Application Metrics",
+    "tags": ["spring", "microservices"],
+    "timezone": "browser",
+    "schemaVersion": 36,
+    "version": 1,
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Application Start Time",
+        "targets": [
+          {
+            "expr": "application_started_time_seconds",
+            "legendFormat": "{{main_application_class}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Application Ready Time",
+        "targets": [
+          {
+            "expr": "application_ready_time_seconds",
+            "legendFormat": "{{main_application_class}}",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Disk Free Space (Bytes)",
+        "targets": [
+          {
+            "expr": "disk_free_bytes",
+            "legendFormat": "{{path}}",
+            "refId": "C"
+          }
+        ]
+      }
+    ]
+  }
+  
