@@ -37,11 +37,11 @@ spring:
   application:
     name: accounts-microservice
 
-  datasource:
+  datasource: ############ поменять на p6spy
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
   jpa:
     hibernate:
       ddl-auto: update
@@ -57,3 +57,14 @@ logging:
     org:
       springframework:
         security: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  zipkin:
+    tracing:
+      endpoint:  http://127.0.0.1:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1

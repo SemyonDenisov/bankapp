@@ -1,6 +1,7 @@
 package ru.yandex.account.controller;
 
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,13 +14,20 @@ public class BlockerController {
 
     BlockerService blockerService;
 
-    public BlockerController(BlockerService blockerService) {
+    MeterRegistry meterRegistry;
+
+    public BlockerController(BlockerService blockerService,MeterRegistry meterRegistry) {
         this.blockerService = blockerService;
+        this.meterRegistry = meterRegistry;
     }
 
     @GetMapping("/block")
     public ResponseEntity<Boolean> block() {
-        return new ResponseEntity<>(blockerService.block(), HttpStatus.OK);
+        var decision = blockerService.block();
+        if(decision){
+            meterRegistry.counter("blocked_operation").increment();
+        }
+        return new ResponseEntity<>(decision, HttpStatus.OK);
     }
 
 }

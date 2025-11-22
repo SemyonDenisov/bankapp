@@ -45,3 +45,14 @@ logging:
     org:
       springframework:
         security: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  zipkin:
+    tracing:
+      endpoint:  http://127.0.0.1:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1  
