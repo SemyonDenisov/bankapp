@@ -9,7 +9,7 @@
 
         <Kafka name="Kafka" topic="logs-microservices">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%X{service}] [%X{traceId}:%X{spanId}] - %msg%n"/>
-            <Property name="bootstrap.servers">localhost:9092</Property>
+            <Property name="bootstrap.servers">kafka-0.kafka.default.svc.cluster.local:9092</Property>
         </Kafka>
     </Appenders>
 

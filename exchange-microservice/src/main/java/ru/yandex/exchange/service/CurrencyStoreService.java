@@ -23,8 +23,9 @@ public class CurrencyStoreService {
 
     private final AtomicLong lastUpdateTimestamp = new AtomicLong(System.currentTimeMillis());
 
+    LogService log;
 
-    public CurrencyStoreService(MeterRegistry meterRegistry) {
+    public CurrencyStoreService(MeterRegistry meterRegistry,LogService logService) {
         rates.put(Currency.USD, 86.0);
         rates.put(Currency.EUR, 86.0);
         rates.put(Currency.RUB, 1.0);
@@ -34,6 +35,7 @@ public class CurrencyStoreService {
                 })
                 .description("1 if exchange rates updated in the last 10 seconds, 0 otherwise")
                 .register(meterRegistry);
+        log = logService;
     }
 
     public void updateRate(Currency currency, double rate) {
@@ -57,6 +59,7 @@ public class CurrencyStoreService {
             lastUpdateTimestamp.set(System.currentTimeMillis());
             ack.acknowledge();
         }catch (Exception e) {
+            log.error("Ошибка при получении котировок");
             ack.acknowledge();
             throw new RuntimeException(e);
         }
