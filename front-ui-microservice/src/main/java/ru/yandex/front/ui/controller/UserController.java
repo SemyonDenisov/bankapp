@@ -41,11 +41,9 @@ public class UserController {
     @PostMapping("/editPassword")
     public String changePassword(@RequestParam("password") String password,
                                  @RequestParam("confirm_password") String confirmPassword) {
-        if (password.equals(confirmPassword)) {
+
             accountService.changePassword(password, confirmPassword);
-        } else {
-            throw new IllegalArgumentException("Passwords do not match");
-        }
+
         return "redirect:/";
     }
 

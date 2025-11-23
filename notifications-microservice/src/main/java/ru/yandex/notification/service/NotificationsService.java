@@ -1,6 +1,9 @@
 package ru.yandex.notification.service;
 
 
+import io.micrometer.tracing.Tracer;
+import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.yandex.notification.model.Message;
@@ -15,6 +18,12 @@ public class NotificationsService {
 
     Map<String, List<String>> oldMessages = new ConcurrentHashMap<>();
 
+    LogService log;
+
+    public NotificationsService(LogService logService) {
+        this.log = logService;
+    }
+
     public List<String> getOldMessagesByEmail(String email) {
         var oldPersonalMessages = oldMessages.containsKey(email) ? oldMessages.get(email) : new ArrayList<String>();
         oldMessages.remove(email);
@@ -28,6 +37,7 @@ public class NotificationsService {
 
     @KafkaListener(topicPattern = "notification.*", groupId = "notification-service")
     public void listen(Message message) {
+        log.info("получены сообщения");
         saveOldMessagesByEmail(message.getEmail(), message.getMessage());
     }
 

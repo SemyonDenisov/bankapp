@@ -11,22 +11,24 @@ import org.springframework.web.client.RestTemplate;
 import ru.yandex.transfer.model.Notification;
 
 @Service
-@Slf4j
 public class NotificationService {
 
     private final RestTemplate restTemplate;
     private final KafkaTemplate<String, Notification> kafkaTemplate;
     CircuitBreaker circuitBreaker;
     Retry retry;
+    LogService log;
 
     @Value("${spring.application.name}")
     private String applicationName;
 
-    public NotificationService(RestTemplate restTemplate, KafkaTemplate<String, Notification> kafkaTemplate) {
+    public NotificationService(RestTemplate restTemplate, KafkaTemplate<String, Notification> kafkaTemplate,LogService logService) {
         this.restTemplate = restTemplate;
         this.kafkaTemplate = kafkaTemplate;
         circuitBreaker = CircuitBreaker.ofDefaults("notifications-microservice");
         retry = Retry.ofDefaults("notifications-microservice");
+        log = logService;
+
     }
 
     public void sendNotification(String message) {

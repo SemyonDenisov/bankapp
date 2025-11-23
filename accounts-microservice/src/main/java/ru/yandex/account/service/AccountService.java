@@ -14,10 +14,12 @@ import java.util.*;
 public class AccountService {
     AccountRepository accountRepository;
     UserRepository userRepository;
+    LogService log;
 
-    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository,LogService log) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.log = log;
     }
 
     public List<AccountDto> getAccountsByEmail(String email) {
@@ -40,33 +42,43 @@ public class AccountService {
     }
 
     public void updateAccounts(List<Currency> selectedCurrencies) {
-        var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var accounts = accountRepository.findByUser(principal);
-        var existedCurrency = accounts.stream().map(Account::getCurrency).toList();
-        selectedCurrencies.forEach(currency -> {
-            if (!existedCurrency.contains(currency)) {
-                accountRepository.save(new Account(currency, principal));
-            }
-        });
-        accounts.forEach(account -> {
-            if (!selectedCurrencies.contains(account.getCurrency()) && account.getBalance() == 0.0) {
-                accountRepository.delete(account);
-            }
-        });
+        try {
+            var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            var accounts = accountRepository.findByUser(principal);
+            var existedCurrency = accounts.stream().map(Account::getCurrency).toList();
+            selectedCurrencies.forEach(currency -> {
+                if (!existedCurrency.contains(currency)) {
+                    accountRepository.save(new Account(currency, principal));
+                }
+            });
+            accounts.forEach(account -> {
+                if (!selectedCurrencies.contains(account.getCurrency()) && account.getBalance() == 0.0) {
+                    accountRepository.delete(account);
+                }
+            });
+        }
+        catch (Exception e) {
+            log.error("Ошибка при обновлении пользователя");
+        }
     }
 
     public Boolean withDraw(Currency currency, Double amount) {
-        var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var accountOpt = accountRepository.findByUserAndCurrency(principal, currency);
-        if (accountOpt.isPresent()) {
-            var account = accountOpt.get();
-            if (account.getBalance() >= amount) {
-                account.setBalance(account.getBalance() - amount);
-                accountRepository.save(account);
-                return true;
-            } else {
-                return false;
+        try {
+            var principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            var accountOpt = accountRepository.findByUserAndCurrency(principal, currency);
+            if (accountOpt.isPresent()) {
+                var account = accountOpt.get();
+                if (account.getBalance() >= amount) {
+                    account.setBalance(account.getBalance() - amount);
+                    accountRepository.save(account);
+                    return true;
+                } else {
+                    return false;
+                }
             }
+            return false;
+        }catch (Exception e) {
+            log.error("Ошибка при снятии");
         }
         return false;
     }
@@ -77,19 +89,24 @@ public class AccountService {
     }
 
     private boolean put(Currency currency, Double amount, User user) {
-        if (user == null) {
+        try {
+
+            if (user == null) {
+                return false;
+            }
+            var accountOpt = accountRepository.findByUserAndCurrency(user, currency);
+            if (accountOpt.isPresent()) {
+                var account = accountOpt.get();
+                account.setBalance(account.getBalance() + amount);
+                accountRepository.save(account);
+                return true;
+            }
+            return false;
+
+        }catch (Exception e) {
+            log.error("Ошибка при пополнении");
             return false;
         }
-        var accountOpt = accountRepository.findByUserAndCurrency(user, currency);
-        if (accountOpt.isPresent()) {
-            var account = accountOpt.get();
-            account.setBalance(account.getBalance() + amount);
-            accountRepository.save(account);
-            return true;
-        }
-        return false;
-
-
     }
 
     public Boolean putAnother(Currency currency, Double amount, String login) {

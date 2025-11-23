@@ -15,11 +15,13 @@ public class CashService {
     private final RestTemplate restTemplate;
     private final CircuitBreaker circuitBreaker;
     private final Retry retry;
+    private final LogService log;
 
-    public CashService(RestTemplate restTemplate) {
+    public CashService(RestTemplate restTemplate,LogService logService) {
         this.restTemplate = restTemplate;
         circuitBreaker = CircuitBreaker.ofDefaults("cash-microservice");
         retry = Retry.ofDefaults("cash-microservice");
+        log = logService;
     }
 
     public boolean withdraw(Currency currency, double amount) {
@@ -44,8 +46,10 @@ public class CashService {
                                     entity,
                                     Void.class
                             )));
+            log.info("Успешное снятие");
             return response.getStatusCode() == HttpStatus.OK;
         } catch (Exception e) {
+            log.error("Ошибка при снятии наличных");
             return false;
         }
     }
@@ -72,8 +76,10 @@ public class CashService {
                                     entity,
                                     Void.class
                             )));
+            log.info("Успешное пополнение");
             return response.getStatusCode() == HttpStatus.OK;
         } catch (Exception e) {
+            log.error("Ошибка при пополнении счета");
             return false;
         }
     }

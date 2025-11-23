@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%X{traceId}:%X{spanId}] - %msg%n"/>
+        </Console>
+
+        <Kafka name="Kafka" topic="logs-microservices">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level [%X{traceId}:%X{spanId}] - %msg%n"/>
+            <Property name="bootstrap.servers">localhost:9092</Property>
+        </Kafka>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.apache.kafka" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Kafka"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>

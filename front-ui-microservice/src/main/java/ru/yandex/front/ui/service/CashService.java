@@ -19,11 +19,13 @@ public class CashService {
     RestTemplate restTemplate;
     CircuitBreaker circuitBreaker;
     Retry retry;
+    LogService log;
 
-    public CashService(RestTemplate restTemplate) {
+    public CashService(RestTemplate restTemplate,LogService log) {
         this.restTemplate = restTemplate;
         circuitBreaker = CircuitBreaker.ofDefaults("cash-microservice");
         retry = Retry.ofDefaults("cash-microservice");
+        this.log = log;
     }
 
     public boolean withdraw(Currency currency, double amount) {
@@ -36,24 +38,29 @@ public class CashService {
     }
 
     public boolean changeBalance(String url, Currency currency, double amount) {
+        try {
+            UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
+                    .queryParam("currency", currency)
+                    .queryParam("amount", amount);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
-                .queryParam("currency", currency)
-                .queryParam("amount", amount);
-
-        String urlWithParams = builder.toUriString();
+            String urlWithParams = builder.toUriString();
 
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        return retry.executeSupplier(() -> circuitBreaker.executeSupplier(() -> restTemplate.exchange(
-                urlWithParams,
-                HttpMethod.POST,
-                entity,
-                Void.class
-        ))).getStatusCode().is2xxSuccessful();
+            return retry.executeSupplier(() -> circuitBreaker.executeSupplier(() -> restTemplate.exchange(
+                    urlWithParams,
+                    HttpMethod.POST,
+                    entity,
+                    Void.class
+            ))).getStatusCode().is2xxSuccessful();
+        }
+        catch (Exception e){
+            log.error("Ошибка при пополнении/снятии наличных");
+            return false;
+        }
     }
 }

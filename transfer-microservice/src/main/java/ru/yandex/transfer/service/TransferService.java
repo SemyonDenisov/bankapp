@@ -16,7 +16,6 @@ import ru.yandex.transfer.model.CurrencyConversionResponse;
 import java.security.Key;
 
 @Service
-@Slf4j
 public class TransferService {
 
     ClientCredentialService clientCredentialService;
@@ -25,22 +24,24 @@ public class TransferService {
     Retry retry;
     MeterRegistry meterRegistry;
     JwtService jwtService;
+    LogService log;
 
     private final RestTemplate restTemplate;
 
-    private final String SECRET = "supersecretkeysupersecretkeysupersecretkey";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+
 
     public TransferService(RestTemplate restTemplate,
                            ClientCredentialService clientCredentialService,
                            MeterRegistry meterRegistry,
-                           JwtService jwtService) {
+                           JwtService jwtService,
+                           LogService logService) {
         this.clientCredentialService = clientCredentialService;
         this.restTemplate = restTemplate;
         circuitBreaker = CircuitBreaker.ofDefaults("transfer-microservice");
         retry = Retry.ofDefaults("transfer-microservice");
         this.meterRegistry = meterRegistry;
         this.jwtService = jwtService;
+        this.log = logService;
     }
 
     public boolean transfer(ru.yandex.front.ui.model.TransferRequest transferRequest) {
@@ -76,25 +77,23 @@ public class TransferService {
                     .queryParam("amount", amountToPut)
                     .queryParam("login", transferRequest.getLogin());
             urlWithParams = builder.toUriString();
-            log.info("\n{}\n", serviceToken);
-            log.info("\n{}\n", transferRequest.getLogin());
             postRequest(urlWithParams, Void.class, userToken);
+            log.info("успешный перевод " + transferRequest.getFromCurrency() + " " + transferRequest.getToCurrency());
             return true;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
+            log.error("ошибка при переводе " + e.getMessage());
             var email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-            if(transferRequest.getLogin()!=null&&!transferRequest.getLogin().isEmpty()){
+            if (transferRequest.getLogin() != null && !transferRequest.getLogin().isEmpty()) {
 
                 meterRegistry.counter("transfer_fail_total",
-                        "from",email,
-                        "to",transferRequest.getLogin(),
-                        "sender_bill",transferRequest.getFromCurrency().toString(),
-                        "consumer_bill",transferRequest.getToCurrency().toString());
-            }
-            else {
-                meterRegistry.counter("self_transfer_fail_total",email,
-                        "from",transferRequest.getFromCurrency().toString(),
-                        "to",transferRequest.getToCurrency().toString());
+                        "from", email,
+                        "to", transferRequest.getLogin(),
+                        "sender_bill", transferRequest.getFromCurrency().toString(),
+                        "consumer_bill", transferRequest.getToCurrency().toString());
+            } else {
+                meterRegistry.counter("self_transfer_fail_total", email,
+                        "from", transferRequest.getFromCurrency().toString(),
+                        "to", transferRequest.getToCurrency().toString());
             }
             return false;
         }
