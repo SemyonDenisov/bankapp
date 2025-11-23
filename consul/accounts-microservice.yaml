@@ -37,7 +37,7 @@ spring:
   application:
     name: accounts-microservice
 
-  datasource: ############ поменять на p6spy
+  datasource: 
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
