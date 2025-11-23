@@ -1,0 +1,111 @@
+{
+    "id": null,
+    "uid": "payment-failures-dashboard",
+    "title": "Failed Money Transfers",
+    "tags": ["payments", "failures", "security"],
+    "schemaVersion": 36,
+    "version": 1,
+    "refresh": "10s",
+    "timezone": "browser",
+    "panels": [
+      {
+        "type": "stat",
+        "title": "Cash Failures (5m)",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(increase(cash_fail_total[5m]))",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
+      },
+      {
+        "type": "stat",
+        "title": "Transfer Failures (5m)",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(increase(transfer_fail_total[5m]))",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 }
+      },
+      {
+        "type": "stat",
+        "title": "Total Failed Operations (5m)",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(increase(cash_fail_total[5m])) + sum(increase(transfer_fail_total[5m]))",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 }
+      },
+      {
+        "type": "graph",
+        "title": "Failures RPS",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(rate(cash_fail_total[1m]))",
+            "legendFormat": "cash",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(transfer_fail_total[1m]))",
+            "legendFormat": "transfer",
+            "refId": "B"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 4, "w": 18, "h": 8 }
+      },
+      {
+        "type": "graph",
+        "title": "Cash Failures Over Time",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(cash_fail_total[5m])",
+            "legendFormat": "cash",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 12, "w": 9, "h": 8 }
+      },
+      {
+        "type": "graph",
+        "title": "Transfer Failures Over Time",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(transfer_fail_total[5m])",
+            "legendFormat": "transfer",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 9, "y": 12, "w": 9, "h": 8 }
+      },
+      {
+        "type": "graph",
+        "title": "Increase (5m interval)",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "increase(cash_fail_total[5m])",
+            "legendFormat": "cash",
+            "refId": "A"
+          },
+          {
+            "expr": "increase(transfer_fail_total[5m])",
+            "legendFormat": "transfer",
+            "refId": "B"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 20, "w": 18, "h": 8 }
+      }
+    ]
+  }
+  

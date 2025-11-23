@@ -1,0 +1,23 @@
+replicaCount: 1
+
+image:
+  repository: kibana
+  tag: "9.2.1"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5601
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "500m"
+  limits:
+    memory: "1Gi"
+    cpu: "1"
+
+elasticsearch:
+  host: http://elasticsearch:9200
+  username: 1
+  password: 1

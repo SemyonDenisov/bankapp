@@ -1,0 +1,5 @@
+apiVersion: v2
+name: kibana
+description: Helm chart for Kibana connected to Elasticsearch
+version: 0.1.0
+appVersion: "8.9.0"
