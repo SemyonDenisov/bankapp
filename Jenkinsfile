@@ -28,7 +28,7 @@ pipeline {
              steps { 
                 script { 
                     //["api-gateway","eureka","accounts-microservice","blocker-microservice","exchange-microservice","exchange-generator-microservice","notifications-microservice","transfer-microservice","cash-microservice","front-ui-microservice"] 
-                    def microservices = ["eureka","blocker-microservice"] 
+                    def microservices = ["eureka","api-gateway","blocker-microservice","accounts-microservice","front-ui-microservice"] 
                     env.SERVICES = (microservices).join(',') 
                     } 
                 }
@@ -127,6 +127,96 @@ pipeline {
                             '''
                         }
                     }
+
+                    dir("helm-charts/elasticsearch") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying elasticsearch via Helm chart"
+                                helm upgrade --install elasticsearch .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying elasticsearch via Helm chart"
+                                helm upgrade --install elasticsearch .
+                            '''
+                        }
+                    }
+
+                    dir("helm-charts/prometheus") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying prometheus via Helm chart"
+                                helm upgrade --install prometheus .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying prometheus via Helm chart"
+                                helm upgrade --install prometheus .
+                            '''
+                        }
+                    }
+
+
+
+                    dir("helm-charts/zipkin") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying zipkin via Helm chart"
+                                helm upgrade --install zipkin .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying zipkin via Helm chart"
+                                helm upgrade --install zipkin .
+                            '''
+                        }
+                    }
+
+                    dir("helm-charts/grafana") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying grafana via Helm chart"
+                                helm upgrade --install grafana .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying grafana via Helm chart"
+                                helm upgrade --install grafana .
+                            '''
+                        }
+                    }
+
+                    dir("helm-charts/logstash") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying logstash via Helm chart"
+                                helm upgrade --install logstash .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying logstash via Helm chart"
+                                helm upgrade --install logstash .
+                            '''
+                        }
+                    }
+
+
+                    dir("helm-charts/kibana") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying kibana via Helm chart"
+                                helm upgrade --install kibana .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying kibana via Helm chart"
+                                helm upgrade --install kibana .
+                            '''
+                        }
+                    }
+
+
+                    
 
                    dir("consul") {
                         if (isUnix()) {

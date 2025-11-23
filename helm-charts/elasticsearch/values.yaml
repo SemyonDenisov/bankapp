@@ -26,3 +26,13 @@ service:
 env:
   discoveryType: "single-node"
   ESJavaOpts: "-Xms1g -Xmx1g"
+
+indexTemplate:
+  enabled: true
+  name: "logs-template"
+  pattern: "bankapp-logs-*"
+  shards: 1
+  replicas: 1
+  lifecycle: "bankapp-logs-policy"
+security:
+  enabled: false

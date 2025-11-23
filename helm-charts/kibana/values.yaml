@@ -5,19 +5,17 @@ image:
   tag: "9.2.1"
   pullPolicy: IfNotPresent
 
-service:
-  type: ClusterIP
-  port: 5601
+elasticsearchHosts: "http://elasticsearch:9200"
 
 resources:
   requests:
-    memory: "512Mi"
+    memory: "1Gi"
     cpu: "500m"
   limits:
     memory: "1Gi"
     cpu: "1"
 
-elasticsearch:
-  host: http://elasticsearch:9200
-  username: 1
-  password: 1
+service:
+  type: ClusterIP
+  port: 5601
+

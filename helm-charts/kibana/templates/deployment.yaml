@@ -18,15 +18,11 @@ spec:
         - name: kibana
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env:
-            - name: ELASTICSEARCH_HOSTS
-              value: "{{ .Values.elasticsearch.host }}"
-            - name: ELASTICSEARCH_USERNAME
-              value: "{{ .Values.elasticsearch.username }}"
-            - name: ELASTICSEARCH_PASSWORD
-              value: "{{ .Values.elasticsearch.password }}"
           ports:
             - containerPort: {{ .Values.service.port }}
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "{{ .Values.elasticsearchHosts }}"
           resources:
             requests:
               memory: {{ .Values.resources.requests.memory }}

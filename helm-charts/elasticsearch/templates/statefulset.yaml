@@ -21,16 +21,27 @@ spec:
         - name: elasticsearch
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+
           ports:
             - containerPort: 9200
               name: http
             - containerPort: 9300
               name: transport
+
           env:
             - name: discovery.type
-              value: {{ .Values.env.discoveryType }}
+              value: "{{ .Values.env.discoveryType }}"
+
             - name: ES_JAVA_OPTS
-              value: {{ .Values.env.ESJavaOpts }}
+              value: "{{ .Values.env.ESJavaOpts }}"
+
+            {{- if not .Values.security.enabled }}
+            - name: xpack.security.enabled
+              value: "false"
+            {{- end }}
+
+
+
           resources:
             requests:
               memory: {{ .Values.resources.requests.memory }}
@@ -38,7 +49,9 @@ spec:
             limits:
               memory: {{ .Values.resources.limits.memory }}
               cpu: {{ .Values.resources.limits.cpu }}
-  volumeClaimTemplates: {{- if .Values.persistence.enabled }}
+
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
     - metadata:
         name: data
       spec:
