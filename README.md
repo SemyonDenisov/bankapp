@@ -1,6 +1,7 @@
 для запуска: запустить Jenkinsfile
 
 логин/пароль grafana: 1/1 
+
 дашборды лежат в helm-charts\grafana\dashboards
 
 
