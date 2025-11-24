@@ -15,3 +15,4 @@ grafana - kubectl port-forward service/grafana 3000:3000
 zipkin - kubectl port-forward service/zipkin 9411:9411
 logstash - kubectl port-forward service/logstash  5044:5044
 
+
