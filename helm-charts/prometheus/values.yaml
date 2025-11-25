@@ -1,0 +1,61 @@
+replicaCount: 1
+
+image:
+  repository: prom/prometheus
+  tag: "v3.7.3"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 9090
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "500m"
+  limits:
+    memory: "1Gi"
+    cpu: "1"
+
+config:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      - job_name: 'microservices'
+        metrics_path: '/actuator/prometheus'
+        static_configs:
+          - targets:
+              - 'exchange-microservice:8085'
+              - 'front-ui-microservice:8089'
+              - 'accounts-microservice:8081'
+              - 'transfer-microservice:8086'
+              - 'blocker-microservice:8087'
+              - 'cash-microservice:8082'
+              - 'exchange-generator-microservice:8084'
+              - 'notification-service:8083'
+    rule_files:
+      - "/etc/prometheus/alerts/alerts.yml"
+
+  alerts.yml: |
+    groups:
+      - name: currency-alerts
+        rules:
+          - alert: CurrencyRatesNotUpdatedPending
+            expr: exchange_rates_up == 0.0
+            for: 10s
+            labels:
+              severity: warning
+            annotations:
+              summary: "Отсутствие обновления курсов валют (Pending)"
+              description: "Метрика exchange_rates_up равна 0 в течение 10 секунд. Последние курсы не обновлялись."
+
+          - alert: CurrencyRatesNotUpdatedFiring
+            expr: exchange_rates_up == 0.0
+            for: 20s
+            labels:
+              severity: critical
+            annotations:
+              summary: "Отсутствие обновления курсов валют (Firing)"
+              description: "Метрика exchange_rates_up равна 0 в течение 20 секунд. Последние курсы не обновлялись."

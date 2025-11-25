@@ -11,6 +11,6 @@ public class BlockerService {
 
     public boolean block() {
         double p = ThreadLocalRandom.current().nextDouble(0, 1);
-        return p < 0.1;
+        return p < 0.5;
     }
 }

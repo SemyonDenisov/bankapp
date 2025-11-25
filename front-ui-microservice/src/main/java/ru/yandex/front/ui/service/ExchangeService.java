@@ -20,24 +20,31 @@ public class ExchangeService {
     RestTemplate restTemplate;
     CircuitBreaker circuitBreaker;
     Retry retry;
+    LogService log;
 
-    public ExchangeService(ClientCredentialService clientCredentialService, RestTemplate restTemplate) {
+    public ExchangeService(ClientCredentialService clientCredentialService, RestTemplate restTemplate,LogService log) {
         this.clientCredentialService = clientCredentialService;
         this.restTemplate = restTemplate;
         circuitBreaker = CircuitBreaker.ofDefaults("exchange-microservice");
         retry = Retry.ofDefaults("exchange-microservice");
+        this.log = log;
     }
 
     public List<CurrencyQuotation> getRates() {
-        var token = clientCredentialService.getToken();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(token);
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-        return retry.executeSupplier(() ->
-                circuitBreaker.executeSupplier(() ->
-                        restTemplate.exchange("http://api-gateway/exchange/rates",
-                                HttpMethod.GET, entity,
-                                new ParameterizedTypeReference<List<CurrencyQuotation>>() {
-                                }).getBody()));
+        try {
+            var token = clientCredentialService.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            return retry.executeSupplier(() ->
+                    circuitBreaker.executeSupplier(() ->
+                            restTemplate.exchange("http://api-gateway/exchange/rates",
+                                    HttpMethod.GET, entity,
+                                    new ParameterizedTypeReference<List<CurrencyQuotation>>() {
+                                    }).getBody()));
+        }catch (Exception e) {
+            log.error("Ошибка при запросе котировок");
+            return List.of();
+        }
     }
 }

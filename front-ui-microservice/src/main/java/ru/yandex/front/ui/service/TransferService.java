@@ -18,42 +18,45 @@ import ru.yandex.front.ui.model.TransferRequest;
 import java.util.List;
 
 @Service
-@Slf4j
 public class TransferService {
 
     RestTemplate restTemplate;
     CircuitBreaker circuitBreaker;
     Retry retry;
+    LogService log;
 
 
-    public TransferService(RestTemplate restTemplate) {
+    public TransferService(RestTemplate restTemplate,LogService log) {
         this.restTemplate = restTemplate;
         circuitBreaker = CircuitBreaker.ofDefaults("transfer-microservice");
         retry = Retry.ofDefaults("transfer-microservice");
+        this.log = log;
     }
 
 
     public boolean selfTransfer(Currency from, Currency to, double amount) {
         TransferRequest transferRequest = new TransferRequest(from, to, amount, "");
-        log.info("\n{}\n",transferRequest);
         return postRequest(transferRequest,"http://api-gateway/transfer/transfer",HttpMethod.POST);
     }
 
     public boolean transferToAnother(Currency from, Currency to, double amount, String login) {
         TransferRequest transferRequest = new TransferRequest(from, to, amount, login);
-        log.info("\n{}\n",transferRequest);
         return postRequest(transferRequest,"http://api-gateway/transfer/transfer",HttpMethod.POST);
     }
 
     public boolean postRequest(TransferRequest transferRequest, String url, HttpMethod method) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
 
-        HttpEntity<TransferRequest>  entity = new HttpEntity<>(transferRequest, headers);
-        return Boolean.TRUE.equals(retry.executeSupplier(() ->
-                circuitBreaker.executeSupplier(() ->
-                        restTemplate.exchange(url, method, entity, Boolean.class).getBody())));
-
+            HttpEntity<TransferRequest> entity = new HttpEntity<>(transferRequest, headers);
+            return Boolean.TRUE.equals(retry.executeSupplier(() ->
+                    circuitBreaker.executeSupplier(() ->
+                            restTemplate.exchange(url, method, entity, Boolean.class).getBody())));
+        }catch (Exception e) {
+            log.error("Ошибка при переводе денег");
+            return false;
+        }
     }
 
 

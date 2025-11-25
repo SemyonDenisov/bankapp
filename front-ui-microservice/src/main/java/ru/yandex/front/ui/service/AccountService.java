@@ -21,32 +21,48 @@ public class AccountService {
     ClientCredentialService clientCredentialService;
     CircuitBreaker circuitBreaker;
     Retry retry;
+    LogService log;
 
 
-    public AccountService(RestTemplate restTemplate, ClientCredentialService clientCredentialService) {
+    public AccountService(RestTemplate restTemplate, ClientCredentialService clientCredentialService,LogService logService) {
         this.restTemplate = restTemplate;
         this.clientCredentialService = clientCredentialService;
         circuitBreaker = CircuitBreaker.ofDefaults("accounts-microservice");
         retry = Retry.ofDefaults("accounts-microservice");
+        this.log = logService;
     }
 
     public void changePassword(String password, String confirmPassword) {
-        request("http://api-gateway/accounts/users/change-password", Void.class, HttpMethod.POST, new ChangePasswordDto(password, confirmPassword));
+        try {
+            request("http://api-gateway/accounts/users/change-password", Void.class, HttpMethod.POST, new ChangePasswordDto(password, confirmPassword));
+        }catch (Exception e){
+            log.error("Ошибка при смене пароля");
+        }
     }
 
     public void editAccount(String name, LocalDate birthDate, List<Currency> selectedCurrencies) {
-        request("http://api-gateway/accounts/users/edit", Void.class, HttpMethod.POST, new UpdateUserDto(name, birthDate, selectedCurrencies));
+        try {
+            request("http://api-gateway/accounts/users/edit", Void.class, HttpMethod.POST, new UpdateUserDto(name, birthDate, selectedCurrencies));
+        }
+        catch (Exception e){
+            log.error("Ошибка изменения данных");
+        }
     }
 
     public List<Account> getAccounts() {
-        HttpHeaders headers = new HttpHeaders();
+        try {
+            HttpHeaders headers = new HttpHeaders();
 
-        headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
+            headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        return retry.executeSupplier(()->circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://accounts-microservice/accounts", HttpMethod.GET, entity, new ParameterizedTypeReference<List<Account>>() {
-        }).getBody()));
+            return retry.executeSupplier(() -> circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://accounts-microservice/accounts", HttpMethod.GET, entity, new ParameterizedTypeReference<List<Account>>() {
+            }).getBody()));
+        }catch (Exception e){
+            log.error("Ошибка при запросе аккаунтов");
+            return new ArrayList<>();
+        }
     }
 
 
@@ -69,23 +85,34 @@ public class AccountService {
     }
 
     public List<User> getUsers() {
-        HttpHeaders headers = new HttpHeaders();
+        try {
+            HttpHeaders headers = new HttpHeaders();
 
-        headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
+            headers.setBearerAuth(SecurityContextHolder.getContext().getAuthentication().getDetails().toString());
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        return retry.executeSupplier(()->circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://api-gateway/accounts/users", HttpMethod.GET, entity, new ParameterizedTypeReference<List<User>>() {
-        }).getBody()));
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            return retry.executeSupplier(() -> circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://api-gateway/accounts/users", HttpMethod.GET, entity, new ParameterizedTypeReference<List<User>>() {
+            }).getBody()));
+        }catch (Exception e){
+            log.error("Ошибка при запросе пользователей");
+            return new ArrayList<>();
+        }
     }
 
     public Boolean registration(RegistrationForm form) {
-        HttpHeaders headers = new HttpHeaders();
+        try {
+            HttpHeaders headers = new HttpHeaders();
 
-        headers.setBearerAuth(clientCredentialService.getToken());
+            headers.setBearerAuth(clientCredentialService.getToken());
 
-        HttpEntity<RegistrationForm> entity = new HttpEntity<>(form, headers);
-        var a = retry.executeSupplier(()->circuitBreaker.executeSupplier(()->restTemplate.exchange("http://api-gateway/accounts/registration", HttpMethod.POST, entity, Object.class)));
-        return true;
+            HttpEntity<RegistrationForm> entity = new HttpEntity<>(form, headers);
+            retry.executeSupplier(() -> circuitBreaker.executeSupplier(() -> restTemplate.exchange("http://api-gateway/accounts/registration", HttpMethod.POST, entity, Object.class)));
+            return true;
+        }
+        catch (Exception e){
+            log.error("Ошибка во время регистрации");
+            return false;
+        }
     }
 
 }

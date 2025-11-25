@@ -13,6 +13,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.yandex.cash.service.ClientCredentialService;
+import ru.yandex.cash.service.NotificationService;
 
 import java.io.IOException;
 
@@ -22,10 +23,13 @@ public class BlockerFilter extends OncePerRequestFilter {
     private final RestTemplate restTemplate;
 
     private final ClientCredentialService clientCredentialService;
+    private final NotificationService notificationService;
 
-    public BlockerFilter(RestTemplate restTemplate,ClientCredentialService clientCredentialService) {
+    public BlockerFilter(RestTemplate restTemplate,ClientCredentialService clientCredentialService,
+                         NotificationService notificationService) {
         this.restTemplate = restTemplate;
         this.clientCredentialService = clientCredentialService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -36,6 +40,10 @@ public class BlockerFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         try {
+            if (request.getRequestURI().equals("/actuator/prometheus")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             var token = clientCredentialService.getToken();
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(token);
@@ -43,10 +51,12 @@ public class BlockerFilter extends OncePerRequestFilter {
             HttpEntity<Void> entity = new HttpEntity<>(headers);
             var decision = restTemplate.exchange("http://blocker-microservice/block", HttpMethod.GET,entity,Boolean.class);
             if (Boolean.TRUE.equals(decision.getBody())) {
+                notificationService.sendNotification("Suspicious operation");
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Suspicious operation");
                 return;
             }
         } catch (RestClientException e) {
+            notificationService.sendNotification("Suspicious operation");
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Suspicious operation");
             return;
         }

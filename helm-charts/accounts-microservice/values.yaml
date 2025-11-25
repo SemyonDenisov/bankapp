@@ -11,7 +11,7 @@ service:
 
 
 env:
-  SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+  SPRING_DATASOURCE_URL: jdbc:p6spy:postgresql://db:5432/mydb
   SPRING_DATASOURCE_USERNAME: myuser
   SPRING_DATASOURCE_PASSWORD: mypassword
 

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grafana.fullname" . }}-datasources
+data:
+  datasource.yaml: |-
+{{ index .Values.provisioning.datasources "yaml" | indent 4 }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "grafana.fullname" . }}-dashboards
+data:
+  dashboards.yaml: |-
+{{ index .Values.provisioning.dashboards "yaml" | indent 4 }}

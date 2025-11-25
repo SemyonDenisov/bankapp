@@ -50,7 +50,7 @@ pipeline {
                                     eval \$(minikube -p ${MINIKUBE_PROFILE} docker-env)
 
                                     echo "Building Maven project"
-                                    mvn clean install 
+                                    mvn clean install -DskipTests
 
                                     echo "Building Docker image"
                                     docker build -t ${svc}:latest .
@@ -62,7 +62,7 @@ pipeline {
                                     & minikube -p ${env.MINIKUBE_PROFILE} docker-env --shell powershell | Invoke-Expression
 
                                     Write-Host 'Building Maven project'
-                                    mvn clean install 
+                                    mvn clean install -DskipTests
 
                                     Write-Host 'Building Docker image'
                                     docker build -t ${svc}:latest .
@@ -126,6 +126,96 @@ pipeline {
                             '''
                         }
                     }
+
+                    dir("helm-charts/elasticsearch") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying elasticsearch via Helm chart"
+                                helm upgrade --install elasticsearch .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying elasticsearch via Helm chart"
+                                helm upgrade --install elasticsearch .
+                            '''
+                        }
+                    }
+
+                    dir("helm-charts/prometheus") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying prometheus via Helm chart"
+                                helm upgrade --install prometheus .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying prometheus via Helm chart"
+                                helm upgrade --install prometheus .
+                            '''
+                        }
+                    }
+
+
+
+                    dir("helm-charts/zipkin") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying zipkin via Helm chart"
+                                helm upgrade --install zipkin .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying zipkin via Helm chart"
+                                helm upgrade --install zipkin .
+                            '''
+                        }
+                    }
+
+                    dir("helm-charts/grafana") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying grafana via Helm chart"
+                                helm upgrade --install grafana .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying grafana via Helm chart"
+                                helm upgrade --install grafana .
+                            '''
+                        }
+                    }
+
+                    dir("helm-charts/logstash") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying logstash via Helm chart"
+                                helm upgrade --install logstash .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying logstash via Helm chart"
+                                helm upgrade --install logstash .
+                            '''
+                        }
+                    }
+
+
+                    dir("helm-charts/kibana") {
+                        if (isUnix()) {
+                            sh '''
+                                echo "Deploying kibana via Helm chart"
+                                helm upgrade --install kibana .
+                            '''
+                        } else {
+                            powershell '''
+                                Write-Host "Deploying kibana via Helm chart"
+                                helm upgrade --install kibana .
+                            '''
+                        }
+                    }
+
+
+                    
 
                    dir("consul") {
                         if (isUnix()) {

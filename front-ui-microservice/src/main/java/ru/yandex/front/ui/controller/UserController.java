@@ -1,9 +1,11 @@
 package ru.yandex.front.ui.controller;
 
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,23 +25,25 @@ public class UserController {
     TransferService transferService;
     AccountService accountService;
     CashService cashService;
+    MeterRegistry meterRegistry;
+
 
     public UserController(TransferService transferService,
                           AccountService accountService,
-                          CashService cashService) {
+                          CashService cashService,
+                          MeterRegistry meterRegistry) {
         this.transferService = transferService;
         this.accountService = accountService;
         this.cashService = cashService;
+        this.meterRegistry = meterRegistry;
     }
 
     @PostMapping("/editPassword")
     public String changePassword(@RequestParam("password") String password,
                                  @RequestParam("confirm_password") String confirmPassword) {
-        if (password.equals(confirmPassword)) {
+
             accountService.changePassword(password, confirmPassword);
-        } else {
-            throw new IllegalArgumentException("Passwords do not match");
-        }
+
         return "redirect:/";
     }
 
@@ -63,12 +67,17 @@ public class UserController {
             @RequestParam("action") String action,
             Model model
     ) {
-        if ("PUT".equals(action)) {
-            cashService.put(currency, value);
-        } else if ("GET".equals(action)) {
-            cashService.withdraw(currency, value);
-        } else {
-            model.addAttribute("cashErrors", List.of("Неизвестное действие: " + action));
+        try {
+            if ("PUT".equals(action)) {
+                cashService.put(currency, value);
+            } else if ("GET".equals(action)) {
+                cashService.withdraw(currency, value);
+            } else {
+                model.addAttribute("cashErrors", List.of("Неизвестное действие: " + action));
+            }
+        } catch (Exception e) {
+            var name = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+            meterRegistry.counter("cash_fail", "username", name, "currency", currency.name(), "action", action).increment();
         }
         return "redirect:/";
     }
@@ -78,16 +87,18 @@ public class UserController {
     public String transfer(@RequestParam(name = "from_currency") Currency currencyFrom,
                            @RequestParam(name = "to_currency") Currency currencyTo,
                            @RequestParam(name = "value") Double value,
-                           @RequestParam(name = "to_login", defaultValue = "") String login,
-                           RedirectAttributes redirectAttributes) {
+                           @RequestParam(name = "to_login", defaultValue = "") String login) {
 
-        log.info("\n\n\n{}\n\n\n", login);
-        if (login != null && !login.isEmpty()) {
-            transferService.transferToAnother(currencyFrom, currencyTo, value, login);
-        } else {
-            transferService.selfTransfer(currencyFrom, currencyTo, value);
+        try {
+            if (login != null && !login.isEmpty()) {
+                transferService.transferToAnother(currencyFrom, currencyTo, value, login);
+            } else {
+                transferService.selfTransfer(currencyFrom, currencyTo, value);
+            }
+        } catch (Exception e) {
+            var name = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+            meterRegistry.counter("transfer_fail", "username", name, "currency_from", currencyFrom.name(), "currency_to", currencyTo.name(), "to", login).increment();
         }
-
         return "redirect:/";
     }
 }

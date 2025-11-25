@@ -1,0 +1,35 @@
+{
+    "id": null,
+    "title": "Exchange Rates",
+    "tags": ["currency", "exchange"],
+    "panels": [
+      {
+        "type": "stat",
+        "title": "Exchange Rates Updated",
+        "targets": [
+          {
+            "expr": "exchange_rates_up",
+            "legendFormat": "up",
+            "refId": "A"
+          }
+        ],
+        "colorMode": "value",
+        "valueMaps": [
+          { "op": "=", "value": "0", "text": "Not Updated" },
+          { "op": "=", "value": "1", "text": "Updated" }
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Exchange Rates Status Over Time",
+        "targets": [
+          {
+            "expr": "exchange_rates_up",
+            "legendFormat": "exchange_rates_up",
+            "refId": "B"
+          }
+        ]
+      }
+    ]
+  }
+  

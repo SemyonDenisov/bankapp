@@ -1,0 +1,65 @@
+{
+    "id": null,
+    "uid": "blocked-ops-dashboard",
+    "title": "Blocked Operations",
+    "tags": ["security", "blocking"],
+    "schemaVersion": 36,
+    "version": 1,
+    "refresh": "10s",
+    "timezone": "browser",
+    "panels": [
+      {
+        "type": "stat",
+        "title": "Blocked Operations (5m)",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(increase(blocked_operation_total[5m]))",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
+      },
+      {
+        "type": "stat",
+        "title": "Blocked Ops RPS",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(rate(blocked_operation_total[1m]))",
+            "refId": "A"
+          }
+        ],
+        "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 }
+      },
+      {
+        "type": "graph",
+        "title": "Blocked Operations Over Time",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(blocked_operation_total[5m])",
+            "legendFormat": "blocked ops",
+            "refId": "A"
+          }
+        ],
+        "lines": true,
+        "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 }
+      },
+      {
+        "type": "graph",
+        "title": "Blocked Ops Increase (per interval)",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "increase(blocked_operation_total[5m])",
+            "legendFormat": "increase",
+            "refId": "A"
+          }
+        ],
+        "lines": true,
+        "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 }
+      }
+    ]
+  }
+  

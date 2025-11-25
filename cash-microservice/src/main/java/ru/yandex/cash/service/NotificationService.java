@@ -16,17 +16,19 @@ public class NotificationService {
 
     private final RestTemplate restTemplate;
     private final KafkaTemplate<String, Notification> kafkaTemplate;
+    private final LogService log;
     CircuitBreaker circuitBreaker;
     Retry retry;
 
     @Value("${spring.application.name}")
     private String applicationName;
 
-    public NotificationService(RestTemplate restTemplate, KafkaTemplate<String, Notification> kafkaTemplate) {
+    public NotificationService(RestTemplate restTemplate, KafkaTemplate<String, Notification> kafkaTemplate,LogService log) {
         this.restTemplate = restTemplate;
         this.kafkaTemplate = kafkaTemplate;
         circuitBreaker = CircuitBreaker.ofDefaults("notifications-microservice");
         retry = Retry.ofDefaults("notifications-microservice");
+        this.log = log;
     }
 
     public void sendNotification(String message) {

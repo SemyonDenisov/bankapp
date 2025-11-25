@@ -1,5 +1,6 @@
 package ru.yandex.account.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,21 +20,31 @@ public class AuthController {
     UserService userService;
     AuthenticationManager authenticationManager;
     JwtService jwtService;
+    MeterRegistry meterRegistry;
 
     public AuthController(AuthenticationManager authenticationManager,
                           UserService userService,
-                          JwtService jwtService) {
+                          JwtService jwtService,
+                          MeterRegistry meterRegistry) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.meterRegistry = meterRegistry;
     }
 
     @PostMapping("/login")
     public ResponseEntity<Token> login(@RequestBody LoginForm loginForm) {
-        var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword()));
-        if (auth.isAuthenticated()) {
-            String token = jwtService.generateToken(loginForm.getEmail());
-            return new ResponseEntity<>(new Token(token), HttpStatus.OK);
+        try {
+            var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getEmail(), loginForm.getPassword()));
+            if (auth.isAuthenticated()) {
+                meterRegistry.counter("auth_login_success_total",
+                        "username", loginForm.getEmail()).increment();
+                String token = jwtService.generateToken(loginForm.getEmail());
+                return new ResponseEntity<>(new Token(token), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            meterRegistry.counter("auth_login_fail_total",
+                    "username", loginForm.getEmail()).increment();
         }
         throw new BadCredentialsException("Invalid email or password");
     }

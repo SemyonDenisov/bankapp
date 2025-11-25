@@ -14,8 +14,8 @@ import java.util.Date;
 public class JwtService {
 
 
-    private final String SECRET = "supersecretkeysupersecretkeysupersecretkey"; // минимум 256 бит
-    private final long EXPIRATION = 1000 * 60 * 60; // 1 час
+    private final String SECRET = "supersecretkeysupersecretkeysupersecretkey";
+    private final long EXPIRATION = 1000 * 60 * 60;
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
